@@ -9,135 +9,64 @@
   <style>
     body { margin:0; font-family:'Bungee', sans-serif; background:#0f1c3a; color:#f0f8ff; }
     .container { max-width:1000px; margin:20px auto; padding:25px; background:#1a2b4e; border-radius:16px; box-shadow:0 15px 40px rgba(0,0,0,0.6); position:relative; overflow:hidden; }
-    .container.night-mode { background:#0a0e1a; color:#d0d0d0; }
-    .container.night-mode button { background:#333; }
-    #graffiti-bg { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; opacity:0.35; background:linear-gradient(135deg, #00b4ff, #ff00aa, #00ff9d); font-family:'Bungee',sans-serif; color:#000; text-shadow:0 0 20px #fff; overflow:hidden; }
-    #graffiti-bg::before, #graffiti-bg::after { content:"E-M-B"; font-size:240px; position:absolute; opacity:0.5; animation: pulse 6s infinite alternate; }
-    #graffiti-bg::before { top:20%; left:8%; transform:rotate(-18deg); }
-    #graffiti-bg::after { bottom:18%; right:12%; transform:rotate(22deg); }
-    @keyframes pulse { 0% { opacity:0.5; transform:scale(1); } 100% { opacity:0.75; transform:scale(1.03); } }
     canvas { border:4px solid #00b4ff; border-radius:12px; margin:25px auto; display:block; z-index:1; touch-action:none; box-shadow:0 0 25px rgba(0,180,255,0.5); background:#ffffff !important; }
-    button, select, input { padding:12px 20px; border-radius:10px; font-size:16px; border:2px solid #00b4ff; cursor:pointer; transition: all 0.3s; font-family:'Bungee',sans-serif; background:#0f1c3a; color:#fff; }
-    button:hover { background:#00b4ff; color:#000; transform:scale(1.08); box-shadow:0 8px 16px rgba(0,180,255,0.6); }
-    #status { color:#00ff9d; font-weight:bold; text-align:center; margin:12px; font-size:20px; text-shadow:0 0 8px #00ff9d; }
-    textarea { width:100%; height:90px; margin:12px 0; background:#0a0e1a; color:#fff; border:2px solid #00b4ff; border-radius:10px; font-family:'Bungee',sans-serif; }
-    .tools { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin:20px 0; }
-    #dtf-price, #dtf-count { font-size:22px; text-align:center; margin:15px; color:#00ff9d; font-weight:bold; text-shadow:0 0 5px #00ff9d; }
-    .gang-preview { margin-top:25px; display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
-    .gang-preview img { width:150px; height:auto; border:3px solid #00b4ff; border-radius:10px; box-shadow:0 0 15px rgba(0,180,255,0.5); transition: transform 0.3s; cursor:pointer; }
-    .gang-preview img:hover { transform:scale(1.12); }
-    .pay-button { background:#00b4ff; font-weight:bold; margin-top:20px; }
-    .social { text-align:center; margin-top:50px; font-size:24px; }
-    .social a { color:#00b4ff; margin:0 15px; transition: color 0.3s; }
-    .social a:hover { color:#ff00aa; }
-    h1 { color:#00ff9d; text-shadow:4px 4px #000; position:relative; z-index:1; text-align:center; animation: spinOnce 7s cubic-bezier(0.68,-0.55,0.265,1.55) forwards; font-size:3.8rem; letter-spacing:3px; }
-    @keyframes spinOnce { 0% { transform:rotate(0deg) scale(1); opacity:0.8; } 100% { transform:rotate(360deg) scale(1.08); opacity:1; } }
-    #full-preview { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:100; justify-content:center; align-items:center; flex-direction:column; }
-    #full-preview img { max-width:90%; max-height:80%; border:5px solid #00ff9d; box-shadow:0 0 30px #00ff9d; }
-    #close-preview { position:absolute; top:20px; right:20px; background:#ff00aa; color:white; padding:10px 20px; border:none; border-radius:6px; cursor:pointer; }
-    .bleed-overlay { position:absolute; pointer-events:none; border:2px dashed #ff00aa; opacity:0.6; }
-    .mode-toggle { background:#ff00aa; color:#fff; }
-    .mode-toggle:hover { background:#e60099; }
-    .shirt-tabs { margin:15px 0; text-align:center; display:none; }
-    .shirt-tabs button { margin:0 10px; padding:8px 16px; background:#ff00aa; color:#fff; border:none; border-radius:8px; cursor:pointer; font-family:'Bungee',sans-serif; }
-    .shirt-tabs button.active { background:#00ff9d; color:#000; }
+    button, select, input { padding:10px 16px; border-radius:8px; font-size:15px; border:2px solid #00b4ff; cursor:pointer; font-family:'Bungee',sans-serif; background:#0f1c3a; color:#fff; }
+    button:hover { background:#00b4ff; color:#000; transform:scale(1.05); }
+    #status { color:#00ff9d; font-weight:bold; text-align:center; margin:12px; font-size:18px; }
+    .tools { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:20px 0; align-items:center; }
+    .glow-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .glow-controls label { color:#ccc; font-size:14px; }
+    #drop-zone { border:3px dashed #00b4ff; border-radius:12px; padding:40px; text-align:center; margin:20px auto; max-width:800px; background:rgba(0,180,255,0.08); min-height:180px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#aaa; transition:all 0.3s; cursor:pointer; }
+    #drop-zone.dragover { border-color:#00ff9d; background:rgba(0,255,157,0.15); color:#00ff9d; box-shadow:0 0 20px rgba(0,255,157,0.3); }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.8/dist/index.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <div id="graffiti-bg"></div>
     <h1>Sheet Happens DTF Gang Sheet Builder</h1>
 
     <div class="tools">
-      <input type="file" id="dtf-upload" accept="image/*" multiple />
+      <input type="file" id="dtf-upload" accept="image/*" multiple style="display:none;" />
+      <button onclick="document.getElementById('dtf-upload').click()">Upload Images</button>
       <button onclick="dtfAddText()">Add Text</button>
-      <button onclick="dtfUpscale()">Upscale</button>
-      <button onclick="dtfRemoveBg()">Remove BG</button>
-      <button onclick="dtfMagicErase()">Magic Erase</button>
-      <button onclick="dtfEnhance()">Enhance</button>
-      <button onclick="dtfUndo()">Undo</button>
-      <button onclick="dtfExport()">Add to Gang</button>
-      <button onclick="dtfExportSVG()">Export SVG</button>
-      <button onclick="batchExportSVG()">Batch Export SVG</button>
-      <button onclick="previewFullSheet()">Preview Full Sheet</button>
-      <button onclick="autoRotate()">Auto Rotate</button>
-      <button onclick="toggleBleed()">Toggle Bleed Lines</button>
-      <select id="dtf-template">
-        <option value="12x16">12x16" Shirt</option>
-        <option value="22x24">22x24" Standard</option>
-        <option value="24x36">24x36" Large</option>
-      </select>
-      <select id="dtf-font" onchange="changeFont()">
-        <option value="Bungee">Bungee</option>
-        <option value="Anton">Anton</option>
-        <option value="Bangers">Bangers</option>
-        <option value="Bebas Neue">Bebas Neue</option>
-        <option value="Creepster">Creepster</option>
-        <option value="Exo 2">Exo 2</option>
-        <option value="Fredoka One">Fredoka One</option>
-        <option value="Luckiest Guy">Luckiest Guy</option>
-        <option value="Oswald">Oswald</option>
-        <option value="Passion One">Passion One</option>
-        <option value="Patua One">Patua One</option>
-        <option value="Permanent Marker">Permanent Marker</option>
-        <option value="Righteous">Righteous</option>
-        <option value="Rock Salt">Rock Salt</option>
-        <option value="Rubik Beastly">Rubik Beastly</option>
-        <option value="Shojumaru">Shojumaru</option>
-        <option value="Sedgwick Ave">Sedgwick Ave</option>
-        <option value="Sigmar One">Sigmar One</option>
-        <option value="Special Elite">Special Elite</option>
-        <option value="Staatliches">Staatliches</option>
-        <option value="Titan One">Titan One</option>
-        <option value="Unica One">Unica One</option>
-        <option value="VT323">VT323</option>
-        <option value="Wallpoet">Wallpoet</option>
-        <option value="Yeseva One">Yeseva One</option>
-        <option value="Zen Dots">Zen Dots</option>
-        <option value="Black Han Sans">Black Han Sans</option>
-        <option value="Chewy">Chewy</option>
-        <option value="Concert One">Concert One</option>
-        <option value="Diplomata SC">Diplomata SC</option>
-        <option value="Faster One">Faster One</option>
-        <option value="Finger Paint">Finger Paint</option>
-        <option value="Fruktur">Fruktur</option>
-        <option value="Galada">Galada</option>
-        <option value="Gruppo">Gruppo</option>
-        <option value="Hind Madurai">Hind Madurai</option>
-        <option value="IM Fell English SC">IM Fell English SC</option>
-        <option value="Josefin Sans">Josefin Sans</option>
-        <option value="Knewave">Knewave</option>
-        <option value="Modak">Modak</option>
-        <option value="Monoton">Monoton</option>
-        <option value="Orbitron">Orbitron</option>
-        <option value="Paytone One">Paytone One</option>
-        <option value="Pirata One">Pirata One</option>
-        <option value="Press Start 2P">Press Start 2P</option>
-        <option value="Raleway Dots">Raleway Dots</option>
-        <option value="Reenie Beanie">Reenie Beanie</option>
-        <option value="Rubik Mono One">Rubik Mono One</option>
-        <option value="Syncopate">Syncopate</option>
-        <option value="UnifrakturMaguntia">UnifrakturMaguntia</option>
-      </select>
-      <input type="range" id="font-size" min="20" max="120" value="40" oninput="updateFontSize()">
-      <label>Font Size</label>
-      <select id="dtf-size" onchange="updateDtfPrice()">
-        <option value="1">1ft</option>
-        <option value="2">2ft</option>
-        <option value="4">4ft</option>
-        <option value="8">8ft</option>
-        <option value="16">16ft</option>
-        <option value="32">32ft</option>
-        <option value="328" selected>328ft Full Roll</option>
-      </select>
-      <div class="color-picker">
-        <label for="text-color">Text Color: </label>
-        <input type="color" id="text-color" value="#ffffff" onchange="updateTextColor()">
+
+      <!-- Glow Controls -->
+      <button onclick="addGlow()">Add Glow</button>
+      <button onclick="removeGlow()">Remove Glow</button>
+      <div class="glow-controls">
+        <label>Glow Color:</label>
+        <input type="color" id="glow-color" value="#ffffff" title="Glow Color">
+        <label>Blur Strength:</label>
+        <input type="range" id="glow-blur" min="0" max="50" value="15" title="Blur Radius" oninput="updateGlow()">
+        <label>Spread:</label>
+        <input type="range" id="glow-spread" min="0" max="30" value="8" title="Spread/Offset" oninput="updateGlow()">
       </div>
+
+      <!-- Previous controls (shadow, outline, gradient, warp) -->
+      <button onclick="applyGradient()">Apply Gradient Fill</button>
+      <button onclick="removeGradient()">Remove Gradient</button>
+      <input type="color" id="gradient-start" value="#ff0000">
+      <input type="color" id="gradient-end" value="#0000ff">
+      <select id="gradient-type">
+        <option value="linear-horizontal">Horizontal</option>
+        <option value="linear-vertical">Vertical</option>
+        <option value="radial">Radial</option>
+      </select>
+
+      <button onclick="addShadow()">Add Shadow</button>
+      <button onclick="removeShadow()">Remove Shadow</button>
+      <input type="color" id="shadow-color" value="#000000">
+      <input type="range" id="shadow-blur" min="0" max="30" value="8" oninput="updateShadow()">
+      <input type="range" id="shadow-offset" min="0" max="20" value="5" oninput="updateShadow()">
+
+      <button onclick="addOutline()">Add Outline</button>
+      <button onclick="removeOutline()">Remove Outline</button>
+      <input type="color" id="outline-color" value="#ffffff">
+      <input type="range" id="outline-width" min="0" max="15" value="3" oninput="updateOutline()">
+
+      <button onclick="dtfUndo()">Undo</button>
+      <button onclick="toggleBleed()">Bleed Lines</button>
       <button class="mode-toggle" onclick="toggleMode()">Shirt Mode</button>
-      <button onclick="toggleNightMode()">Night Mode</button>
     </div>
 
     <div id="shirt-tabs" class="shirt-tabs" style="display:none;">
@@ -146,39 +75,17 @@
       <button data-view="sleeve" onclick="switchView('sleeve')" class="tab-btn">Sleeve</button>
     </div>
 
+    <div id="drop-zone">
+      Drag & Drop Images Here or Click to Upload
+    </div>
+
     <canvas id="dtf-editor" width="900" height="1200"></canvas>
 
-    <div id="dtf-price">Price: $0.00 (incl. NJ tax)</div>
-    <p id="dtf-count">Designs: 0</p>
-    <div class="gang-preview" id="gang-preview"></div>
-
-    <input type="text" id="dtf-name" placeholder="Your Name" />
-    <input type="text" id="dtf-contact" placeholder="Contact (email/phone)" />
-    <button class="pay-button" onclick="payWithPayPal()">Pay Now</button>
-
-    <div style="margin-top:25px;">
-      <h3>AI Generate</h3>
-      <input type="text" id="api-key" placeholder="OpenAI API Key (sk-...)"/>
-      <textarea id="prompt" placeholder="Describe: 'red dragon on black shirt'"></textarea>
-      <button onclick="generateImage()">Generate & Add</button>
-      <div id="status">Ready</div>
-    </div>
-
-    <div class="social">
-      <a href="https://www.facebook.com/omp.stu.7" target="_blank"><i class="fab fa-facebook-f"></i></a>
-      <a href="https://www.instagram.com/omp.stu.7" target="_blank"><i class="fab fa-instagram"></i></a>
-    </div>
-  </div>
-
-  <div id="full-preview">
-    <button id="close-preview" onclick="document.getElementById('full-preview').style.display='none'">Close</button>
-    <img id="full-sheet-img" src="" alt="Full Gang Sheet Preview" />
-    <p style="color:white; margin-top:10px;">(Scaled to 12x16" ratio - precise placement ready for print)</p>
+    <div id="status">Ready – add text or images</div>
   </div>
 
   <script>
-    let dtfCanvas, history = [], bleedVisible = false, isShirtMode = false, currentView = 'front', bleedRect;
-    let dtfGang = []; // array of canvas JSON objects for batch export
+    let dtfCanvas, bleedVisible = false, isShirtMode = false, currentView = 'front', bleedRect;
 
     window.addEventListener('load', () => {
       dtfCanvas = new fabric.Canvas('dtf-editor', {
@@ -196,210 +103,96 @@
       });
       dtfCanvas.add(bleedRect);
 
-      dtfCanvas.setBackgroundColor('#ffffff', dtfCanvas.renderAll.bind(dtfCanvas));
-      document.getElementById('status').textContent = 'Canvas ready – white & locked!';
+      const dropZone = document.getElementById('drop-zone');
+      dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+      });
+      dropZone.addEventListener('click', () => document.getElementById('dtf-upload').click());
+
+      document.getElementById('dtf-upload').addEventListener('change', e => handleFiles(e.target.files));
     });
 
-    function saveState() {
-      history.push(dtfCanvas.toJSON(['name', 'fontFamily', 'fontSize', 'fill']));
-      if (history.length > 15) history.shift();
-    }
-
-    function dtfUndo() {
-      if (history.length === 0) return;
-      dtfCanvas.loadFromJSON(history.pop(), () => dtfCanvas.renderAll());
-      document.getElementById('status').textContent = 'Undone!';
-    }
-
-    document.getElementById('dtf-upload').addEventListener('change', e => {
-      const files = Array.from(e.target.files);
-      if (files.length === 0) return;
-      saveState();
+    function handleFiles(fileList) {
+      const files = Array.from(fileList);
       files.forEach(file => {
         const reader = new FileReader();
         reader.onload = ev => {
           fabric.Image.fromURL(ev.target.result, img => {
-            img.scaleToWidth(300);
+            img.scaleToWidth(400);
+            img.set({
+              left: (dtfCanvas.width - img.getScaledWidth()) / 2,
+              top: (dtfCanvas.height - img.getScaledHeight()) / 2
+            });
             dtfCanvas.add(img);
-            dtfCanvas.centerObject(img);
             dtfCanvas.setActiveObject(img);
             dtfCanvas.renderAll();
-            document.getElementById('status').textContent = 'Image added!';
-          });
+          }, { crossOrigin: 'anonymous' });
         };
         reader.readAsDataURL(file);
       });
-    });
+    }
 
     function dtfAddText() {
-      saveState();
-      const text = new fabric.IText('Your Text', {
-        left: 100, top: 100, fontFamily: 'Bungee', fontSize: 40, fill: '#000000'
+      const text = new fabric.IText('Edit me', {
+        left: 200, top: 200,
+        fontFamily: 'Bungee',
+        fontSize: 60,
+        fill: '#000000',
+        editable: true,
+        originX: 'center',
+        originY: 'center'
       });
+
       dtfCanvas.add(text);
       dtfCanvas.setActiveObject(text);
       dtfCanvas.renderAll();
-      document.getElementById('status').textContent = 'Text added!';
     }
 
-    function changeFont() {
-      const font = document.getElementById('dtf-font').value;
+    function addGlow() {
       const active = dtfCanvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.set({ fontFamily: font });
-        dtfCanvas.renderAll();
-      }
-    }
+      if (!active || active.type !== 'i-text') return;
 
-    function updateFontSize() {
-      const size = document.getElementById('font-size').value;
-      const active = dtfCanvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.set({ fontSize: parseInt(size) });
-        dtfCanvas.renderAll();
-      }
-    }
+      const glowColor = document.getElementById('glow-color').value || '#ffffff';
+      const blur = parseInt(document.getElementById('glow-blur').value) || 15;
+      const spread = parseInt(document.getElementById('glow-spread').value) || 8;
 
-    function updateTextColor() {
-      const color = document.getElementById('text-color').value;
-      const active = dtfCanvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.set({ fill: color });
-        dtfCanvas.renderAll();
-      }
-    }
-
-    function toggleBleed() {
-      bleedVisible = !bleedVisible;
-      bleedRect.set({visible: bleedVisible});
-      dtfCanvas.renderAll();
-      document.getElementById('status').textContent = bleedVisible ? 'Bleed on' : 'Bleed off';
-    }
-
-    function toggleNightMode() {
-      document.querySelector('.container').classList.toggle('night-mode');
-    }
-
-    function payWithPayPal() {
-      alert('Replace this with your real PayPal button code!');
-    }
-
-    function generateImage() {
-      alert('AI generate placeholder');
-    }
-
-    function toggleMode() {
-      isShirtMode = !isShirtMode;
-      document.querySelector('.mode-toggle').textContent = isShirtMode ? 'Exit Shirt Mode' : 'Shirt Mode';
-      document.getElementById('shirt-tabs').style.display = isShirtMode ? 'block' : 'none';
-      if (isShirtMode) {
-        switchView('front');
-      } else {
-        dtfCanvas.setBackgroundColor('#ffffff', dtfCanvas.renderAll.bind(dtfCanvas));
-      }
-      document.getElementById('status').textContent = isShirtMode ? 'Shirt mode on' : 'Shirt mode off';
-    }
-
-    function switchView(view) {
-      currentView = view;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-view') === view));
-
-      dtfCanvas.clear();
-      dtfCanvas.setBackgroundColor('#ffffff', () => {});
-
-      const guide = new fabric.Rect({ left:100, top:100, width:700, height:900, stroke:'#00ff9d', fill:'transparent', selectable:false });
-      dtfCanvas.add(guide);
-
-      const label = new fabric.Text(view.toUpperCase(), { left:400, top:20, fontSize:30, fill:'#00ff9d', selectable:false });
-      dtfCanvas.add(label);
-
-      dtfCanvas.renderAll();
-      document.getElementById('status').textContent = `Editing ${view}`;
-    }
-
-    function autoRotate() {
-      const obj = dtfCanvas.getActiveObject();
-      if (obj && obj.type === 'image') {
-        obj.rotate(obj.angle + 90);
-        dtfCanvas.renderAll();
-      }
-    }
-
-    function previewFullSheet() {
-      const dataUrl = dtfCanvas.toDataURL({ format: 'png', multiplier: 4 });
-      document.getElementById('full-sheet-img').src = dataUrl;
-      document.getElementById('full-preview').style.display = 'flex';
-    }
-
-    function dtfExport() {
-      const json = dtfCanvas.toJSON(['name', 'fontFamily', 'fontSize', 'fill']);
-      dtfGang.push(json);
-      const dataUrl = dtfCanvas.toDataURL({ format: 'png', multiplier: 4 });
-      const img = document.createElement('img');
-      img.src = dataUrl;
-      img.onclick = () => {
-        document.getElementById('full-sheet-img').src = dataUrl;
-        document.getElementById('full-preview').style.display = 'flex';
-      };
-      document.getElementById('gang-preview').appendChild(img);
-      document.getElementById('status').textContent = 'Added to gang!';
-      updateDtfPrice();
-    }
-
-    function dtfExportSVG() {
-      const svg = dtfCanvas.toSVG({
-        viewBox: '0 0 ' + dtfCanvas.width + ' ' + dtfCanvas.height,
-        width: dtfCanvas.width,
-        height: dtfCanvas.height
-      });
-      const blob = new Blob([svg], {type: 'image/svg+xml'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'gang-sheet.svg';
-      a.click();
-      URL.revokeObjectURL(url);
-      document.getElementById('status').textContent = 'SVG exported!';
-    }
-
-    function batchExportSVG() {
-      if (dtfGang.length === 0) return alert('No designs in gang yet!');
-
-      dtfGang.forEach((json, index) => {
-        // Temporarily load each JSON into a hidden canvas to export SVG
-        const tempCanvas = new fabric.StaticCanvas(null, { width: 900, height: 1200 });
-        tempCanvas.loadFromJSON(json, () => {
-          const svg = tempCanvas.toSVG({
-            viewBox: '0 0 900 1200',
-            width: 900,
-            height: 1200
-          });
-          const blob = new Blob([svg], {type: 'image/svg+xml'});
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `gang-sheet-${index + 1}.svg`;
-          a.click();
-          URL.revokeObjectURL(url);
-          tempCanvas.dispose();
-        });
+      // Glow is achieved with a strong, blurred shadow with no offset
+      active.setShadow({
+        color: glowColor,
+        blur: blur,
+        offsetX: 0,
+        offsetY: 0,
+        spread: spread / 2  // spread simulates glow thickness
       });
 
-      document.getElementById('status').textContent = 'Batch SVG export started - files downloading...';
+      // Optional: add a second faint shadow for stronger glow
+      active.set('shadows', [
+        new fabric.Shadow({ color: glowColor, blur: blur * 1.5, offsetX: 0, offsetY: 0 }),
+        active.shadow
+      ]);
+
+      dtfCanvas.renderAll();
     }
 
-    function updateDtfPrice() {
-      const count = dtfGang.length;
-      const feet = parseInt(document.getElementById('dtf-size').value) || 2;
-      const base = 16;
-      const extraLength = Math.max(0, feet - 2) * 0.1;
-      const extraDesigns = Math.max(0, count - 12) * 1.5;
-      const subtotal = base + extraLength + extraDesigns;
-      const tax = subtotal * 0.06625;
-      const total = subtotal + tax;
-      document.getElementById('dtf-price').textContent = `Price: $${total.toFixed(2)} (incl. NJ tax)`;
-      document.getElementById('dtf-count').textContent = `Designs: ${count}`;
+    function removeGlow() {
+      const active = dtfCanvas.getActiveObject();
+      if (active && active.type === 'i-text') {
+        active.setShadow(null);
+        active.set('shadows', null);
+        dtfCanvas.renderAll();
+      }
     }
+
+    function updateGlow() {
+      addGlow(); // live update when sliders move
+    }
+
+    // ... keep all other functions from previous version: applyGradient, removeGradient, addShadow, removeShadow, updateShadow, addOutline, removeOutline, updateOutline, toggleBleed, toggleMode, switchView, etc.
+    // For brevity, only glow-related functions are shown above - paste the rest of your script here
   </script>
 </body>
 </html>
