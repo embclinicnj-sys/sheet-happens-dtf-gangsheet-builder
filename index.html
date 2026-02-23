@@ -4,195 +4,135 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sheet Happens DTF Gang Sheet Builder</title>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bebas+Neue&family=Bungee&family=Creepster&family=Exo+2:wght@700&family=Fredoka+One&family=Impact&family=Luckiest+Guy&family=Oswald:wght@700&family=Passion+One&family=Patua+One&family=Permanent+Marker&family=Righteous&family=Rock+Salt&family=Rubik+Beastly&family=Shojumaru&family=Sedgwick+Ave&family=Sigmar+One&family=Special+Elite&family=Staatliches&family=Titan+One&family=Unica+One&family=VT323&family=Wallpoet&family=Yeseva+One&family=Zen+Dots&family=Black+Han+Sans&family=Chewy&family=Concert+One&family=Diplomata+SC&family=Faster+One&family=Finger+Paint&family=Fruktur&family=Galada&family=Gruppo&family=Hind+Madurai:wght@700&family=IM+Fell+English+SC&family=Josefin+Sans:wght@700&family=Knewave&family=Modak&family=Monoton&family=Orbitron:wght@700&family=Paytone+One&family=Pirata+One&family=Press+Start+2P&family=Raleway+Dots&family=Reenie+Beanie&family=Rubik+Mono+One&family=Special+Elite&family=Syncopate:wght@700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
   <style>
-    body { margin:0; font-family:'Bungee', sans-serif; background:#0f1c3a; color:#f0f8ff; }
-    .container { max-width:1000px; margin:20px auto; padding:25px; background:#1a2b4e; border-radius:16px; box-shadow:0 15px 40px rgba(0,0,0,0.6); position:relative; overflow:hidden; }
-    canvas { border:4px solid #00b4ff; border-radius:12px; margin:25px auto; display:block; z-index:1; touch-action:none; box-shadow:0 0 25px rgba(0,180,255,0.5); background:#ffffff !important; }
-    button, select, input { padding:10px 16px; border-radius:8px; font-size:15px; border:2px solid #00b4ff; cursor:pointer; font-family:'Bungee',sans-serif; background:#0f1c3a; color:#fff; }
-    button:hover { background:#00b4ff; color:#000; transform:scale(1.05); }
-    #status { color:#00ff9d; font-weight:bold; text-align:center; margin:12px; font-size:18px; }
-    .tools { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:20px 0; align-items:center; }
-    .glow-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .glow-controls label { color:#ccc; font-size:14px; }
-    #drop-zone { border:3px dashed #00b4ff; border-radius:12px; padding:40px; text-align:center; margin:20px auto; max-width:800px; background:rgba(0,180,255,0.08); min-height:180px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#aaa; transition:all 0.3s; cursor:pointer; }
-    #drop-zone.dragover { border-color:#00ff9d; background:rgba(0,255,157,0.15); color:#00ff9d; box-shadow:0 0 20px rgba(0,255,157,0.3); }
+    body { margin:0; font-family:'Bungee', sans-serif; background:#0f1c3a; color:#f0f8ff; text-align:center; }
+    .container { max-width:1000px; margin:20px auto; padding:20px; background:#1a2b4e; border-radius:16px; }
+    canvas { border:4px solid #00b4ff; border-radius:12px; margin:20px auto; display:block; background:#ffffff !important; }
+    button, input, select { padding:10px 16px; margin:6px; border-radius:8px; font-size:16px; border:2px solid #00b4ff; background:#0f1c3a; color:#fff; cursor:pointer; }
+    button:hover { background:#00b4ff; color:#000; }
+    #status { font-size:20px; margin:15px; color:#00ff9d; }
+    #drop-zone { border:3px dashed #00b4ff; border-radius:12px; padding:40px; margin:20px auto; max-width:800px; background:rgba(0,180,255,0.1); min-height:150px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#aaa; cursor:pointer; transition:0.3s; }
+    #drop-zone:hover, #drop-zone.dragover { border-color:#00ff9d; color:#00ff9d; background:rgba(0,255,157,0.2); }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>Sheet Happens DTF Gang Sheet Builder</h1>
+    <div id="status">Initializing canvas...</div>
 
-    <div class="tools">
-      <input type="file" id="dtf-upload" accept="image/*" multiple style="display:none;" />
-      <button onclick="document.getElementById('dtf-upload').click()">Upload Images</button>
-      <button onclick="dtfAddText()">Add Text</button>
+    <div id="drop-zone">Drag & Drop Images Here or Click to Upload</div>
+    <input type="file" id="dtf-upload" accept="image/*" multiple style="display:none;">
 
-      <!-- Glow Controls -->
-      <button onclick="addGlow()">Add Glow</button>
-      <button onclick="removeGlow()">Remove Glow</button>
-      <div class="glow-controls">
-        <label>Glow Color:</label>
-        <input type="color" id="glow-color" value="#ffffff" title="Glow Color">
-        <label>Blur Strength:</label>
-        <input type="range" id="glow-blur" min="0" max="50" value="15" title="Blur Radius" oninput="updateGlow()">
-        <label>Spread:</label>
-        <input type="range" id="glow-spread" min="0" max="30" value="8" title="Spread/Offset" oninput="updateGlow()">
-      </div>
-
-      <!-- Previous controls (shadow, outline, gradient, warp) -->
-      <button onclick="applyGradient()">Apply Gradient Fill</button>
-      <button onclick="removeGradient()">Remove Gradient</button>
-      <input type="color" id="gradient-start" value="#ff0000">
-      <input type="color" id="gradient-end" value="#0000ff">
-      <select id="gradient-type">
-        <option value="linear-horizontal">Horizontal</option>
-        <option value="linear-vertical">Vertical</option>
-        <option value="radial">Radial</option>
-      </select>
-
-      <button onclick="addShadow()">Add Shadow</button>
-      <button onclick="removeShadow()">Remove Shadow</button>
-      <input type="color" id="shadow-color" value="#000000">
-      <input type="range" id="shadow-blur" min="0" max="30" value="8" oninput="updateShadow()">
-      <input type="range" id="shadow-offset" min="0" max="20" value="5" oninput="updateShadow()">
-
-      <button onclick="addOutline()">Add Outline</button>
-      <button onclick="removeOutline()">Remove Outline</button>
-      <input type="color" id="outline-color" value="#ffffff">
-      <input type="range" id="outline-width" min="0" max="15" value="3" oninput="updateOutline()">
-
-      <button onclick="dtfUndo()">Undo</button>
-      <button onclick="toggleBleed()">Bleed Lines</button>
-      <button class="mode-toggle" onclick="toggleMode()">Shirt Mode</button>
-    </div>
-
-    <div id="shirt-tabs" class="shirt-tabs" style="display:none;">
-      <button data-view="front" onclick="switchView('front')" class="tab-btn active">Front</button>
-      <button data-view="back" onclick="switchView('back')" class="tab-btn">Back</button>
-      <button data-view="sleeve" onclick="switchView('sleeve')" class="tab-btn">Sleeve</button>
-    </div>
-
-    <div id="drop-zone">
-      Drag & Drop Images Here or Click to Upload
+    <div style="margin:20px;">
+      <button onclick="addText()">Add Text</button>
+      <button onclick="undoLast()">Undo</button>
+      <button onclick="exportPNG()">Export PNG</button>
     </div>
 
     <canvas id="dtf-editor" width="900" height="1200"></canvas>
-
-    <div id="status">Ready – add text or images</div>
   </div>
 
   <script>
-    let dtfCanvas, bleedVisible = false, isShirtMode = false, currentView = 'front', bleedRect;
+    let canvas;
+    let history = [];
 
-    window.addEventListener('load', () => {
-      dtfCanvas = new fabric.Canvas('dtf-editor', {
+    function initCanvas() {
+      canvas = new fabric.Canvas('dtf-editor', {
         width: 900,
         height: 1200,
         backgroundColor: '#ffffff',
-        preserveObjectStacking: true,
         selection: true
       });
+      document.getElementById('status').textContent = 'Canvas ready – white & locked. Drag images or click drop zone!';
+      console.log('Canvas initialized successfully');
+    }
 
-      bleedRect = new fabric.Rect({
-        left:50, top:50, width:800, height:1100,
-        stroke:'#ff00aa', strokeWidth:2, strokeDashArray:[5,5],
-        fill:'transparent', selectable:false, evented:false, visible:false
+    function saveState() {
+      history.push(canvas.toJSON());
+      if (history.length > 20) history.shift();
+    }
+
+    function undoLast() {
+      if (history.length < 2) return;
+      history.pop(); // remove current
+      canvas.loadFromJSON(history[history.length - 1], canvas.renderAll.bind(canvas));
+      document.getElementById('status').textContent = 'Undo applied';
+    }
+
+    function addText() {
+      saveState();
+      const text = new fabric.IText('Edit me', {
+        left: 200,
+        top: 200,
+        fontFamily: 'Bungee',
+        fontSize: 60,
+        fill: '#000000'
       });
-      dtfCanvas.add(bleedRect);
+      canvas.add(text);
+      canvas.setActiveObject(text);
+      canvas.renderAll();
+      document.getElementById('status').textContent = 'Text added – click to edit';
+    }
 
-      const dropZone = document.getElementById('drop-zone');
-      dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-      dropZone.addEventListener('drop', e => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
-        handleFiles(e.dataTransfer.files);
-      });
-      dropZone.addEventListener('click', () => document.getElementById('dtf-upload').click());
+    function exportPNG() {
+      const dataUrl = canvas.toDataURL({ format: 'png', multiplier: 3 });
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'gang-sheet.png';
+      a.click();
+    }
 
-      document.getElementById('dtf-upload').addEventListener('change', e => handleFiles(e.target.files));
-    });
+    function handleFiles(files) {
+      files = Array.from(files);
+      if (files.length === 0) return;
 
-    function handleFiles(fileList) {
-      const files = Array.from(fileList);
+      saveState();
+      let added = 0;
+
       files.forEach(file => {
         const reader = new FileReader();
         reader.onload = ev => {
           fabric.Image.fromURL(ev.target.result, img => {
+            if (!img) {
+              console.error('Image load failed for', file.name);
+              return;
+            }
             img.scaleToWidth(400);
             img.set({
-              left: (dtfCanvas.width - img.getScaledWidth()) / 2,
-              top: (dtfCanvas.height - img.getScaledHeight()) / 2
+              left: (canvas.width - img.getScaledWidth()) / 2,
+              top: (canvas.height - img.getScaledHeight()) / 2
             });
-            dtfCanvas.add(img);
-            dtfCanvas.setActiveObject(img);
-            dtfCanvas.renderAll();
+            canvas.add(img);
+            canvas.setActiveObject(img);
+            canvas.renderAll();
+            added++;
+            document.getElementById('status').textContent = `Added ${added}/${files.length} images`;
           }, { crossOrigin: 'anonymous' });
         };
         reader.readAsDataURL(file);
       });
     }
 
-    function dtfAddText() {
-      const text = new fabric.IText('Edit me', {
-        left: 200, top: 200,
-        fontFamily: 'Bungee',
-        fontSize: 60,
-        fill: '#000000',
-        editable: true,
-        originX: 'center',
-        originY: 'center'
-      });
+    // Event listeners
+    const dropZone = document.getElementById('drop-zone');
+    dropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+    dropZone.addEventListener('click', () => document.getElementById('dtf-upload').click());
 
-      dtfCanvas.add(text);
-      dtfCanvas.setActiveObject(text);
-      dtfCanvas.renderAll();
-    }
+    document.getElementById('dtf-upload').addEventListener('change', e => handleFiles(e.target.files));
 
-    function addGlow() {
-      const active = dtfCanvas.getActiveObject();
-      if (!active || active.type !== 'i-text') return;
-
-      const glowColor = document.getElementById('glow-color').value || '#ffffff';
-      const blur = parseInt(document.getElementById('glow-blur').value) || 15;
-      const spread = parseInt(document.getElementById('glow-spread').value) || 8;
-
-      // Glow is achieved with a strong, blurred shadow with no offset
-      active.setShadow({
-        color: glowColor,
-        blur: blur,
-        offsetX: 0,
-        offsetY: 0,
-        spread: spread / 2  // spread simulates glow thickness
-      });
-
-      // Optional: add a second faint shadow for stronger glow
-      active.set('shadows', [
-        new fabric.Shadow({ color: glowColor, blur: blur * 1.5, offsetX: 0, offsetY: 0 }),
-        active.shadow
-      ]);
-
-      dtfCanvas.renderAll();
-    }
-
-    function removeGlow() {
-      const active = dtfCanvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.setShadow(null);
-        active.set('shadows', null);
-        dtfCanvas.renderAll();
-      }
-    }
-
-    function updateGlow() {
-      addGlow(); // live update when sliders move
-    }
-
-    // ... keep all other functions from previous version: applyGradient, removeGradient, addShadow, removeShadow, updateShadow, addOutline, removeOutline, updateOutline, toggleBleed, toggleMode, switchView, etc.
-    // For brevity, only glow-related functions are shown above - paste the rest of your script here
+    // Start
+    initCanvas();
   </script>
 </body>
 </html>
