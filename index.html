@@ -7,153 +7,336 @@
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bebas+Neue&family=Bungee&family=Creepster&family=Exo+2:wght@700&family=Fredoka+One&family=Impact&family=Luckiest+Guy&family=Oswald:wght@700&family=Passion+One&family=Patua+One&family=Permanent+Marker&family=Righteous&family=Rock+Salt&family=Rubik+Beastly&family=Shojumaru&family=Sedgwick+Ave&family=Sigmar+One&family=Special+Elite&family=Staatliches&family=Titan+One&family=Unica+One&family=VT323&family=Wallpoet&family=Yeseva+One&family=Zen+Dots&family=Black+Han+Sans&family=Chewy&family=Concert+One&family=Diplomata+SC&family=Faster+One&family=Finger+Paint&family=Fruktur&family=Galada&family=Gruppo&family=Hind+Madurai:wght@700&family=IM+Fell+English+SC&family=Josefin+Sans:wght@700&family=Knewave&family=Modak&family=Monoton&family=Orbitron:wght@700&family=Paytone+One&family=Pirata+One&family=Press+Start+2P&family=Raleway+Dots&family=Reenie+Beanie&family=Rubik+Mono+One&family=Special+Elite&family=Syncopate:wght@700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { margin:0; font-family:'Bungee', sans-serif; background:#0f1c3a; color:#f0f8ff; }
-    .container { max-width:1000px; margin:20px auto; padding:25px; background:#1a2b4e; border-radius:16px; box-shadow:0 15px 40px rgba(0,0,0,0.6); position:relative; overflow:hidden; }
-    .container.night-mode { background:#0a0e1a; color:#d0d0d0; }
-    canvas { border:4px solid #00b4ff; border-radius:12px; margin:25px auto; display:block; z-index:1; touch-action:none; box-shadow:0 0 25px rgba(0,180,255,0.5); background:#ffffff !important; }
-    button, select, input { padding:10px 16px; border-radius:8px; font-size:15px; border:2px solid #00b4ff; cursor:pointer; font-family:'Bungee',sans-serif; background:#0f1c3a; color:#fff; }
-    button:hover { background:#00b4ff; color:#000; transform:scale(1.05); }
-    #status { color:#00ff9d; font-weight:bold; text-align:center; margin:12px; font-size:20px; text-shadow:0 0 8px #00ff9d; }
-    .tools { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:20px 0; align-items:center; }
-    .text-controls, .glow-controls, .gradient-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0; }
-    .text-controls label, .glow-controls label, .gradient-controls label { color:#ccc; font-size:14px; }
-    #drop-zone { border:3px dashed #00b4ff; border-radius:12px; padding:40px; text-align:center; margin:20px auto; max-width:800px; background:rgba(0,180,255,0.08); min-height:180px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#aaa; transition:all 0.3s; cursor:pointer; }
-    #drop-zone.dragover { border-color:#00ff9d; background:rgba(0,255,157,0.15); color:#00ff9d; box-shadow:0 0 20px rgba(0,255,157,0.3); }
-    .shirt-tabs { margin:15px 0; text-align:center; display:none; }
-    .shirt-tabs button { margin:0 10px; padding:8px 16px; background:#ff00aa; color:#fff; border:none; border-radius:8px; cursor:pointer; }
-    .shirt-tabs button.active { background:#00ff9d; color:#000; }
-    .gang-preview { margin-top:25px; display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
-    .gang-preview img { width:150px; height:auto; border:3px solid #00b4ff; border-radius:10px; cursor:pointer; }
-    .gang-preview img:hover { transform:scale(1.12); }
+    body {
+      margin: 0;
+      font-family: 'Bungee', sans-serif;
+      background: #0f1c3a;
+      color: #f0f8ff;
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 340px;
+      background: #1a2b4e;
+      padding: 20px;
+      box-sizing: border-box;
+      height: 100vh;
+      position: fixed;
+      overflow-y: auto;
+      border-right: 3px solid #00b4ff;
+      z-index: 10;
+    }
+    .sidebar h3, .sidebar h4 {
+      color: #00ff9d;
+      text-align: center;
+      margin: 15px 0 10px;
+    }
+    .main-content {
+      margin-left: 340px;
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #00ff9d;
+      text-shadow: 4px 4px #000;
+      font-size: 3.8rem;
+      margin: 0 0 30px;
+      text-align: center;
+      animation: spinFlash 7s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+    @keyframes spinFlash {
+      0%   { transform: rotate(0deg) scale(0.9); opacity: 0.7; }
+      50%  { transform: rotate(180deg) scale(1.1); opacity: 1; }
+      100% { transform: rotate(360deg) scale(1.05); opacity: 1; }
+    }
+    canvas {
+      border: 4px solid #00b4ff;
+      border-radius: 12px;
+      background: #ffffff !important;
+      box-shadow: 0 0 25px rgba(0,180,255,0.5);
+      max-width: 100%;
+      margin-bottom: 20px;
+      transition: background 0.4s ease-in-out;
+    }
+    button, select, input[type="file"] {
+      padding: 10px 16px;
+      margin: 6px 0;
+      border-radius: 8px;
+      font-size: 15px;
+      border: 2px solid #00b4ff;
+      background: #0f1c3a;
+      color: #fff;
+      cursor: pointer;
+      width: 100%;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #00b4ff;
+      color: #000;
+      transform: scale(1.03);
+    }
+    input[type="range"], input[type="color"] {
+      width: 140px;
+      margin: 0 8px;
+    }
+    label {
+      color: #ccc;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    #status {
+      color: #00ff9d;
+      font-weight: bold;
+      text-align: center;
+      margin: 15px 0;
+      font-size: 20px;
+    }
+    #drop-zone {
+      border: 3px dashed #00b4ff;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      background: rgba(0,180,255,0.08);
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #aaa;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin: 20px 0;
+      max-width: 800px;
+    }
+    #drop-zone:hover, #drop-zone.dragover {
+      border-color: #00ff9d;
+      color: #00ff9d;
+      background: rgba(0,255,157,0.2);
+    }
+    .shirt-tabs {
+      display: none;
+      margin: 15px 0;
+      text-align: center;
+    }
+    .shirt-tabs button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      background: #ff00aa;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .shirt-tabs button.active {
+      background: #00ff9d;
+      color: black;
+    }
+    .mockup-section {
+      margin: 15px 0;
+      padding: 10px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+    }
+    .mockup-thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin: 8px 0;
+    }
+    .mockup-thumb {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #444;
+      border-radius: 8px;
+      background: #222;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .mockup-thumb:hover, .mockup-thumb.active {
+      border-color: #00ff9d;
+    }
+    .mockup-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .gang-preview {
+      margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+    .gang-preview img {
+      width: 140px;
+      height: auto;
+      border: 3px solid #00b4ff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .gang-preview img:hover {
+      transform: scale(1.1);
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div id="graffiti-bg"></div>
-    <h1>Sheet Happens DTF Gang Sheet Builder</h1>
+  <div class="sidebar">
+    <h3>Tools & Controls</h3>
 
-    <div class="tools">
-      <input type="file" id="dtf-upload" accept="image/*" multiple style="display:none;" />
-      <button onclick="document.getElementById('dtf-upload').click()">Upload Images</button>
-      <button onclick="dtfAddText()">Add Text</button>
+    <input type="file" id="dtf-upload" accept="image/*" multiple style="display:none;" />
+    <button onclick="document.getElementById('dtf-upload').click()">
+      <i class="fas fa-upload"></i> Upload Your Designs
+    </button>
 
-      <!-- Glow -->
-      <button onclick="addGlow()">Add Glow</button>
-      <button onclick="removeGlow()">Remove Glow</button>
-      <div class="glow-controls">
-        <label>Glow Color:</label>
-        <input type="color" id="glow-color" value="#ffffff">
-        <label>Blur:</label>
-        <input type="range" id="glow-blur" min="0" max="50" value="15" oninput="updateGlow()">
-        <label>Spread:</label>
-        <input type="range" id="glow-spread" min="0" max="30" value="8" oninput="updateGlow()">
+    <!-- Custom mockup uploads + scaling + thumbnails -->
+    <h4>Custom Mockups & Scaling</h4>
+
+    <div class="mockup-section">
+      <label>Front</label>
+      <input type="file" id="mockup-front" accept="image/*" />
+      <div class="mockup-thumbs">
+        <div class="mockup-thumb" id="thumb-front"><img id="preview-front" src="" alt="Front"></div>
       </div>
+      <label>Scale:</label>
+      <input type="range" id="scale-front" min="50" max="200" value="100" oninput="updateMockupScale('front')">
+      <button onclick="resetMockupScale('front')">Reset</button>
+    </div>
 
-      <!-- Gradient -->
-      <button onclick="applyGradient()">Apply Gradient</button>
-      <button onclick="removeGradient()">Remove Gradient</button>
-      <div class="gradient-controls">
-        <label>Start:</label><input type="color" id="gradient-start" value="#ff0000">
-        <label>End:</label><input type="color" id="gradient-end" value="#0000ff">
-        <select id="gradient-type">
-          <option value="linear-horizontal">Horizontal</option>
-          <option value="linear-vertical">Vertical</option>
-          <option value="radial">Radial</option>
-        </select>
+    <div class="mockup-section">
+      <label>Back</label>
+      <input type="file" id="mockup-back" accept="image/*" />
+      <div class="mockup-thumbs">
+        <div class="mockup-thumb" id="thumb-back"><img id="preview-back" src="" alt="Back"></div>
       </div>
+      <label>Scale:</label>
+      <input type="range" id="scale-back" min="50" max="200" value="100" oninput="updateMockupScale('back')">
+      <button onclick="resetMockupScale('back')">Reset</button>
+    </div>
 
-      <!-- Shadow & Outline -->
-      <button onclick="addShadow()">Add Shadow</button>
-      <button onclick="removeShadow()">Remove Shadow</button>
-      <input type="color" id="shadow-color" value="#000000">
-      <input type="range" id="shadow-blur" min="0" max="30" value="8" oninput="updateShadow()">
-      <input type="range" id="shadow-offset" min="0" max="20" value="5" oninput="updateShadow()">
+    <div class="mockup-section">
+      <label>Sleeve</label>
+      <input type="file" id="mockup-sleeve" accept="image/*" />
+      <div class="mockup-thumbs">
+        <div class="mockup-thumb" id="thumb-sleeve"><img id="preview-sleeve" src="" alt="Sleeve"></div>
+      </div>
+      <label>Scale:</label>
+      <input type="range" id="scale-sleeve" min="50" max="200" value="100" oninput="updateMockupScale('sleeve')">
+      <button onclick="resetMockupScale('sleeve')">Reset</button>
+    </div>
 
-      <button onclick="addOutline()">Add Outline</button>
-      <button onclick="removeOutline()">Remove Outline</button>
-      <input type="color" id="outline-color" value="#ffffff">
-      <input type="range" id="outline-width" min="0" max="15" value="3" oninput="updateOutline()">
+    <div class="mockup-section">
+      <label>Hoodie</label>
+      <input type="file" id="mockup-hoodie" accept="image/*" />
+      <div class="mockup-thumbs">
+        <div class="mockup-thumb" id="thumb-hoodie"><img id="preview-hoodie" src="" alt="Hoodie"></div>
+      </div>
+      <label>Scale:</label>
+      <input type="range" id="scale-hoodie" min="50" max="200" value="100" oninput="updateMockupScale('hoodie')">
+      <button onclick="resetMockupScale('hoodie')">Reset</button>
+    </div>
 
-      <!-- Warp -->
-      <button onclick="applyWarp('arc')">Arc Bend</button>
-      <button onclick="applyWarp('bulge')">Bulge</button>
-      <button onclick="applyWarp('wave')">Wave</button>
-      <button onclick="applyWarp('arch')">Arch</button>
-      <button onclick="resetWarp()">Reset Warp</button>
+    <!-- Text controls -->
+    <button onclick="dtfAddText()">
+      <i class="fas fa-font"></i> Add Text
+    </button>
 
+    <div class="text-controls">
+      <label>Font:</label>
       <select id="dtf-font" onchange="changeFont()">
         <option value="Bungee">Bungee</option>
         <option value="Anton">Anton</option>
-        <option value="Bangers">Bangers</option>
+        <option value="Impact">Impact</option>
         <option value="Bebas Neue">Bebas Neue</option>
         <option value="Creepster">Creepster</option>
-        <option value="Exo 2">Exo 2</option>
         <option value="Fredoka One">Fredoka One</option>
         <option value="Luckiest Guy">Luckiest Guy</option>
-        <option value="Oswald">Oswald</option>
-        <option value="Passion One">Passion One</option>
-        <option value="Patua One">Patua One</option>
-        <option value="Permanent Marker">Permanent Marker</option>
-        <option value="Righteous">Righteous</option>
-        <option value="Rock Salt">Rock Salt</option>
-        <option value="Rubik Beastly">Rubik Beastly</option>
-        <option value="Shojumaru">Shojumaru</option>
-        <option value="Sedgwick Ave">Sedgwick Ave</option>
-        <option value="Sigmar One">Sigmar One</option>
-        <option value="Special Elite">Special Elite</option>
-        <option value="Staatliches">Staatliches</option>
-        <option value="Titan One">Titan One</option>
-        <option value="Unica One">Unica One</option>
-        <option value="VT323">VT323</option>
-        <option value="Wallpoet">Wallpoet</option>
-        <option value="Yeseva One">Yeseva One</option>
-        <option value="Zen Dots">Zen Dots</option>
       </select>
 
+      <label>Size:</label>
       <input type="range" id="font-size" min="20" max="180" value="60" oninput="updateFontSize()">
-      <label>Size</label>
+
+      <label>Color:</label>
       <input type="color" id="text-color" value="#000000" onchange="updateTextColor()">
-      <label>Color</label>
-
-      <button onclick="dtfUndo()">Undo</button>
-      <button onclick="toggleBleed()">Bleed Lines</button>
-      <button class="mode-toggle" onclick="toggleMode()">Shirt Mode</button>
     </div>
 
-    <div id="shirt-tabs" class="shirt-tabs" style="display:none;">
-      <button data-view="front" onclick="switchView('front')" class="tab-btn active">Front</button>
-      <button data-view="back" onclick="switchView('back')" class="tab-btn">Back</button>
-      <button data-view="sleeve" onclick="switchView('sleeve')" class="tab-btn">Sleeve</button>
+    <!-- Other tools -->
+    <button onclick="dtfUndo()">
+      <i class="fas fa-undo"></i> Undo
+    </button>
+
+    <button onclick="dtfExport()">
+      <i class="fas fa-save"></i> Add to Gang
+    </button>
+
+    <button onclick="dtfExportSVG()">
+      <i class="fas fa-file-export"></i> Export SVG
+    </button>
+
+    <button onclick="previewFullSheet()">
+      <i class="fas fa-eye"></i> Preview Sheet
+    </button>
+
+    <button onclick="autoRotate()">
+      <i class="fas fa-sync-alt"></i> Rotate
+    </button>
+
+    <button onclick="toggleBleed()">
+      <i class="fas fa-border-all"></i> Toggle Bleed
+    </button>
+
+    <button onclick="toggleMode()">
+      <i class="fas fa-tshirt"></i> Toggle Shirt Mode
+    </button>
+  </div>
+
+  <div class="main-content">
+    <h1>Sheet Happens DTF Gang Sheet Builder</h1>
+
+    <div id="shirt-tabs" class="shirt-tabs">
+      <button onclick="switchView('front')">Front</button>
+      <button onclick="switchView('back')">Back</button>
+      <button onclick="switchView('sleeve')">Sleeve</button>
+      <button onclick="switchView('hoodie')">Hoodie</button>
     </div>
 
-    <div id="drop-zone">Drag & Drop Images Here or Click to Upload</div>
+    <div id="drop-zone">Drag & Drop Your Designs Here or Click to Upload</div>
 
     <canvas id="dtf-editor" width="900" height="1200"></canvas>
 
-    <div id="status">Ready – add text or images</div>
+    <div id="status">Ready – drag designs or upload custom mockups</div>
 
     <div class="gang-preview" id="gang-preview"></div>
-
-    <div style="margin-top:20px;">
-      <button onclick="previewFullSheet()">Preview Full Sheet</button>
-      <button onclick="dtfExport()">Add to Gang</button>
-      <button onclick="dtfExportSVG()">Export SVG</button>
-      <button onclick="batchExportSVG()">Batch Export SVG</button>
-    </div>
-  </div>
-
-  <div id="full-preview" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:1000; justify-content:center; align-items:center; flex-direction:column;">
-    <button id="close-preview" onclick="document.getElementById('full-preview').style.display='none'" style="position:absolute; top:20px; right:20px; background:#ff00aa; color:white; padding:10px 20px; border:none; border-radius:6px; cursor:pointer;">Close</button>
-    <img id="full-sheet-img" src="" alt="Full Preview" style="max-width:90%; max-height:80%; border:5px solid #00ff9d; box-shadow:0 0 30px #00ff9d;" />
   </div>
 
   <script>
-    let dtfCanvas, history = [], bleedVisible = false, isShirtMode = false, currentView = 'front', bleedRect;
-    let dtfGang = [];
+    let canvas, history = [], bleedVisible = false, shirtMode = false, bleedRect, currentView = 'front';
+
+    // Mockup scaling factors (default 100%)
+    const mockupScales = {
+      front: 1,
+      back: 1,
+      sleeve: 1,
+      hoodie: 1
+    };
+
+    // Default mockups
+    let shirtMockups = {
+      front: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80',
+      back: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80',
+      sleeve: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80',
+      hoodie: 'https://images.unsplash.com/photo-1556821840-3a63e5bbf4a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80'
+    };
 
     window.addEventListener('load', () => {
-      dtfCanvas = new fabric.Canvas('dtf-editor', {
+      canvas = new fabric.Canvas('dtf-editor', {
         width: 900,
         height: 1200,
         backgroundColor: '#ffffff',
@@ -162,14 +345,13 @@
       });
 
       bleedRect = new fabric.Rect({
-        left:50, top:50, width:800, height:1100,
-        stroke:'#ff00aa', strokeWidth:2, strokeDashArray:[5,5],
-        fill:'transparent', selectable:false, evented:false, visible:false
+        left: 50, top: 50, width: 800, height: 1100,
+        stroke: '#ff00aa', strokeWidth: 2, strokeDashArray: [5,5],
+        fill: 'transparent', selectable: false, evented: false, visible: false
       });
-      dtfCanvas.add(bleedRect);
+      canvas.add(bleedRect);
 
-      dtfCanvas.setBackgroundColor('#ffffff', dtfCanvas.renderAll.bind(dtfCanvas));
-
+      // Drag & Drop for designs
       const dropZone = document.getElementById('drop-zone');
       dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
       dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
@@ -182,7 +364,29 @@
 
       document.getElementById('dtf-upload').addEventListener('change', e => handleFiles(e.target.files));
 
-      document.getElementById('status').textContent = 'Ready – drag images or click upload';
+      // Custom mockup upload + instant thumbnail
+      ['front', 'back', 'sleeve', 'hoodie'].forEach(view => {
+        const input = document.getElementById(`mockup-${view}`);
+        input.addEventListener('change', e => {
+          const file = e.target.files[0];
+          if (file) {
+            const url = URL.createObjectURL(file);
+            shirtMockups[view] = url;
+            const preview = document.getElementById(`preview-${view}`);
+            if (preview) preview.src = url;
+            document.getElementById('status').textContent = `Custom ${view} mockup loaded`;
+            if (shirtMode && currentView === view) switchView(view);
+          }
+        });
+      });
+
+      // Initial thumbnails from defaults
+      Object.keys(shirtMockups).forEach(view => {
+        const preview = document.getElementById(`preview-${view}`);
+        if (preview) preview.src = shirtMockups[view];
+      });
+
+      document.getElementById('status').textContent = 'Ready – drag designs or upload custom mockups';
     });
 
     function handleFiles(fileList) {
@@ -197,14 +401,14 @@
             if (!img) return;
             img.scaleToWidth(400);
             img.set({
-              left: (dtfCanvas.width - img.getScaledWidth()) / 2,
-              top: (dtfCanvas.height - img.getScaledHeight()) / 2
+              left: (canvas.width - img.getScaledWidth()) / 2,
+              top: (canvas.height - img.getScaledHeight()) / 2
             });
-            dtfCanvas.add(img);
-            dtfCanvas.setActiveObject(img);
-            dtfCanvas.renderAll();
+            canvas.add(img);
+            canvas.setActiveObject(img);
+            canvas.renderAll();
             loaded++;
-            document.getElementById('status').textContent = `Added ${loaded}/${files.length} images`;
+            document.getElementById('status').textContent = `Added ${loaded}/${files.length} design(s)`;
           }, { crossOrigin: 'anonymous' });
         };
         reader.readAsDataURL(file);
@@ -221,96 +425,135 @@
         originX: 'center',
         originY: 'center'
       });
-
-      dtfCanvas.add(text);
-      dtfCanvas.setActiveObject(text);
-      dtfCanvas.renderAll();
-      document.getElementById('status').textContent = 'Text added – select to edit effects';
+      canvas.add(text);
+      canvas.setActiveObject(text);
+      canvas.renderAll();
+      document.getElementById('status').textContent = 'Text added – select to edit';
     }
 
     function changeFont() {
       const font = document.getElementById('dtf-font').value;
-      const active = dtfCanvas.getActiveObject();
+      const active = canvas.getActiveObject();
       if (active && active.type === 'i-text') {
         active.set({ fontFamily: font });
-        dtfCanvas.renderAll();
+        canvas.renderAll();
       }
     }
 
     function updateFontSize() {
       const size = parseInt(document.getElementById('font-size').value);
-      const active = dtfCanvas.getActiveObject();
+      const active = canvas.getActiveObject();
       if (active && active.type === 'i-text') {
         active.set({ fontSize: size });
-        dtfCanvas.renderAll();
+        canvas.renderAll();
       }
     }
 
     function updateTextColor() {
       const color = document.getElementById('text-color').value;
-      const active = dtfCanvas.getActiveObject();
+      const active = canvas.getActiveObject();
       if (active && active.type === 'i-text') {
         active.set({ fill: color });
-        dtfCanvas.renderAll();
+        canvas.renderAll();
       }
     }
 
-    // Glow
-    function addGlow() {
-      const active = dtfCanvas.getActiveObject();
-      if (!active || active.type !== 'i-text') return;
-      const color = document.getElementById('glow-color').value || '#ffffff';
-      const blur = parseInt(document.getElementById('glow-blur').value) || 15;
-      const spread = parseInt(document.getElementById('glow-spread').value) || 8;
-      active.setShadow({
-        color: color,
-        blur: blur,
-        offsetX: 0,
-        offsetY: 0,
-        spread: spread
+    function toggleBleed() {
+      bleedVisible = !bleedVisible;
+      bleedRect.set({ visible: bleedVisible });
+      canvas.renderAll();
+    }
+
+    function toggleMode() {
+      shirtMode = !shirtMode;
+      document.getElementById('shirt-tabs').style.display = shirtMode ? 'block' : 'none';
+      document.getElementById('status').textContent = shirtMode ? 'Shirt Mode ON – choose view' : 'Shirt Mode OFF';
+      if (shirtMode) {
+        switchView('front');
+      } else {
+        canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
+        canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+      }
+    }
+
+    function switchView(view) {
+      currentView = view;
+
+      canvas.setBackgroundImage(null, () => {
+        fabric.Image.fromURL(shirtMockups[view], bgImg => {
+          if (bgImg) {
+            // Apply user-defined scale
+            const userScale = mockupScales[view] / 100;
+            const baseScale = Math.max(
+              canvas.width / bgImg.width,
+              canvas.height / bgImg.height
+            );
+            bgImg.scale(baseScale * userScale);
+
+            // Center
+            bgImg.set({
+              left: (canvas.width - bgImg.getScaledWidth()) / 2,
+              top: (canvas.height - bgImg.getScaledHeight()) / 2,
+              selectable: false,
+              evented: false,
+              originX: 'left',
+              originY: 'top'
+            });
+
+            canvas.setBackgroundImage(bgImg, canvas.renderAll.bind(canvas));
+            document.getElementById('status').textContent = `Editing ${view} mockup (scale: ${Math.round(userScale * 100)}%)`;
+          } else {
+            canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+            document.getElementById('status').textContent = `No ${view} mockup – using white`;
+          }
+        }, { crossOrigin: 'anonymous' });
       });
-      dtfCanvas.renderAll();
     }
 
-    function removeGlow() {
-      const active = dtfCanvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.setShadow(null);
-        dtfCanvas.renderAll();
+    function updateMockupScale(view) {
+      const scalePercent = parseInt(document.getElementById(`scale-${view}`).value);
+      mockupScales[view] = scalePercent;
+      if (shirtMode && currentView === view) {
+        switchView(view);
       }
     }
 
-    // Gradient
-    function applyGradient() {
-      const active = dtfCanvas.getActiveObject();
-      if (!active || active.type !== 'i-text') return;
-      const start = document.getElementById('gradient-start').value;
-      const end = document.getElementById('gradient-end').value;
-      const type = document.getElementById('gradient-type').value;
-
-      let coords = { x1: 0, y1: 0, x2: 1, y2: 0 };
-      if (type === 'linear-vertical') coords = { x1: 0, y1: 0, x2: 0, y2: 1 };
-      if (type === 'radial') coords = { x1: active.width/2, y1: active.height/2, x2: active.width/2, y2: active.height/2, r1: 0, r2: active.width/2 };
-
-      const gradient = new fabric.Gradient({
-        type: type === 'radial' ? 'radial' : 'linear',
-        coords: coords,
-        colorStops: [{ offset: 0, color: start }, { offset: 1, color: end }]
-      });
-
-      active.set({ fill: gradient });
-      dtfCanvas.renderAll();
-    }
-
-    function removeGradient() {
-      const active = dtfCanvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.set({ fill: '#000000' });
-        dtfCanvas.renderAll();
+    function resetMockupScale(view) {
+      document.getElementById(`scale-${view}`).value = 100;
+      mockupScales[view] = 100;
+      if (shirtMode && currentView === view) {
+        switchView(view);
       }
     }
 
-    // ... (add your other functions: shadow, outline, warp, undo, export, batch, toggleMode, switchView, etc. as needed)
+    // Placeholder functions (expand later)
+    function dtfUndo() { alert('Undo coming soon'); }
+    function dtfExport() { alert('Add to Gang coming soon'); }
+    function dtfExportSVG() {
+      const svg = canvas.toSVG();
+      const blob = new Blob([svg], {type: 'image/svg+xml'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'design.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function previewFullSheet() {
+      const dataUrl = canvas.toDataURL({ format: 'png', multiplier: 4 });
+      const win = window.open();
+      win.document.write('<img src="' + dataUrl + '" style="width:100%;">');
+      win.document.close();
+    }
+
+    function autoRotate() {
+      const obj = canvas.getActiveObject();
+      if (obj && obj.type === 'image') {
+        obj.rotate(obj.angle + 90);
+        canvas.renderAll();
+      }
+    }
   </script>
 </body>
 </html>
