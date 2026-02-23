@@ -6,143 +6,114 @@
   <title>Sheet Happens DTF Gang Sheet Builder</title>
   <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Impact&family=Bebas+Neue&family=Creepster&family=Fredoka+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- GSAP for smooth animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
     body { margin:0; font-family:'Bungee', sans-serif; background:#0f1c3a; color:#f0f8ff; display:flex; min-height:100vh; }
     .sidebar { width:300px; background:#1a2b4e; padding:20px; height:100vh; position:fixed; overflow-y:auto; border-right:3px solid #00b4ff; }
-    .sidebar h3, .sidebar h4 { color:#00ff9d; text-align:center; margin:15px 0 10px; }
     .main-content { margin-left:300px; flex:1; padding:20px; display:flex; flex-direction:column; align-items:center; }
-    h1 { color:#00ff9d; text-shadow:4px 4px #000; font-size:3.8rem; margin:0 0 30px; animation:spinFlash 7s cubic-bezier(0.68,-0.55,0.265,1.55) forwards; }
+    h1 { color:#00ff9d; text-shadow:4px 4px #000; font-size:3.5rem; margin:0 0 20px; animation:spinFlash 7s cubic-bezier(0.68,-0.55,0.265,1.55) forwards; text-align:center; }
     @keyframes spinFlash { 0%{transform:rotate(0deg) scale(0.9);opacity:0.7} 50%{transform:rotate(180deg) scale(1.1);opacity:1} 100%{transform:rotate(360deg) scale(1.05);opacity:1} }
-    canvas { border:4px solid #00b4ff; border-radius:12px; background:#ffffff !important; box-shadow:0 0 25px rgba(0,180,255,0.5); max-width:100%; margin-bottom:20px; transition:background 0.4s; }
-    button, select, input { padding:10px 16px; margin:6px 0; border-radius:8px; font-size:15px; border:2px solid #00b4ff; background:#0f1c3a; color:#fff; cursor:pointer; width:100%; box-sizing:border-box; transition:all 0.2s; }
-    button:hover { background:#00b4ff; color:#000; transform:scale(1.03); }
-    input[type="range"], input[type="color"] { width:140px; margin:0 8px; }
-    label { color:#ccc; font-size:14px; margin-right:8px; }
-    #status { color:#00ff9d; font-weight:bold; text-align:center; margin:15px 0; font-size:20px; }
-    #drop-zone { border:3px dashed #00b4ff; border-radius:12px; padding:30px; text-align:center; background:rgba(0,180,255,0.08); min-height:140px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#aaa; cursor:pointer; transition:all 0.3s; margin:20px 0; max-width:800px; }
+    canvas { border:4px solid #00b4ff; border-radius:12px; background:#ffffff !important; box-shadow:0 0 25px rgba(0,180,255,0.5); max-width:100%; }
+    button, input, select { padding:10px 16px; margin:8px 0; border-radius:8px; font-size:15px; border:2px solid #00b4ff; background:#0f1c3a; color:#fff; cursor:pointer; width:100%; box-sizing:border-box; transition:all 0.2s; }
+    button:hover { background:#00b4ff; color:#000; transform:scale(1.03); box-shadow:0 0 15px #00b4ff; }
+    #status, #price-display { color:#00ff9d; font-weight:bold; text-align:center; margin:15px 0; font-size:20px; transition:all 0.3s; }
+    .price-flash { animation: priceFlash 1.2s ease-out; }
+    @keyframes priceFlash {
+      0% { transform:scale(1); color:#00ff9d; text-shadow:0 0 10px #00ff9d; }
+      50% { transform:scale(1.15); color:#ffff00; text-shadow:0 0 30px #ffff00; }
+      100% { transform:scale(1); color:#00ff9d; text-shadow:0 0 10px #00ff9d; }
+    }
+    #price-breakdown { color:#ccc; text-align:center; margin:10px 0; font-size:14px; line-height:1.5; }
+    #drop-zone { border:3px dashed #00b4ff; border-radius:12px; padding:30px; text-align:center; background:rgba(0,180,255,0.1); min-height:140px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#aaa; cursor:pointer; transition:0.3s; margin:20px 0; max-width:800px; }
     #drop-zone:hover, #drop-zone.dragover { border-color:#00ff9d; color:#00ff9d; background:rgba(0,255,157,0.2); }
-    .shirt-tabs { display:none; margin:15px 0; text-align:center; }
-    .shirt-tabs button { margin:0 10px; padding:10px 20px; background:#ff00aa; color:white; border:none; border-radius:8px; cursor:pointer; }
-    .shirt-tabs button.active { background:#00ff9d; color:black; }
-    .mockup-section { margin:15px 0; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; }
-    .mockup-thumbs { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:8px 0; }
-    .mockup-thumb { width:80px; height:80px; border:2px solid #444; border-radius:8px; background:#222; overflow:hidden; cursor:pointer; transition:border-color 0.2s; }
-    .mockup-thumb:hover, .mockup-thumb.active { border-color:#00ff9d; }
-    .mockup-thumb img { width:100%; height:100%; object-fit:cover; }
+    .social-pay { text-align:center; margin:40px 0; font-size:24px; }
+    .social-pay a { color:#00b4ff; margin:0 15px; transition:color 0.3s; }
+    .social-pay a:hover { color:#ff00aa; transform:scale(1.2); }
+    .pay-button { background:#00b4ff; font-weight:bold; margin:20px 0; width:auto; padding:15px 40px; font-size:18px; }
+    .pay-button:hover { box-shadow:0 0 20px #00b4ff; }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <!-- PayPal SDK - REPLACE WITH YOUR REAL CLIENT ID -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AYourSandboxClientIDHere&currency=USD&intent=capture&enable-funding=venmo"></script>
 </head>
 <body>
   <div class="sidebar">
-    <h3>Tools</h3>
+    <h3>Controls</h3>
 
     <input type="file" id="dtf-upload" accept="image/*" multiple style="display:none;" />
-    <button onclick="document.getElementById('dtf-upload').click()">Upload Designs</button>
+    <button onclick="document.getElementById('dtf-upload').click()">Upload Images</button>
 
-    <h4>Mockups</h4>
-
-    <div class="mockup-section">
-      <label>Front</label>
-      <input type="file" id="mockup-front" accept="image/*" />
-      <div class="mockup-thumbs"><div class="mockup-thumb"><img id="preview-front" src="" alt="Front"></div></div>
-      <label>Scale</label>
-      <input type="range" id="scale-front" min="50" max="200" value="100" oninput="updateMockupScale('front')">
-      <button onclick="resetMockupScale('front')">Reset</button>
-    </div>
-
-    <div class="mockup-section">
-      <label>Back</label>
-      <input type="file" id="mockup-back" accept="image/*" />
-      <div class="mockup-thumbs"><div class="mockup-thumb"><img id="preview-back" src="" alt="Back"></div></div>
-      <label>Scale</label>
-      <input type="range" id="scale-back" min="50" max="200" value="100" oninput="updateMockupScale('back')">
-      <button onclick="resetMockupScale('back')">Reset</button>
-    </div>
-
-    <div class="mockup-section">
-      <label>Sleeve</label>
-      <input type="file" id="mockup-sleeve" accept="image/*" />
-      <div class="mockup-thumbs"><div class="mockup-thumb"><img id="preview-sleeve" src="" alt="Sleeve"></div></div>
-      <label>Scale</label>
-      <input type="range" id="scale-sleeve" min="50" max="200" value="100" oninput="updateMockupScale('sleeve')">
-      <button onclick="resetMockupScale('sleeve')">Reset</button>
-    </div>
-
-    <div class="mockup-section">
-      <label>Hoodie</label>
-      <input type="file" id="mockup-hoodie" accept="image/*" />
-      <div class="mockup-thumbs"><div class="mockup-thumb"><img id="preview-hoodie" src="" alt="Hoodie"></div></div>
-      <label>Scale</label>
-      <input type="range" id="scale-hoodie" min="50" max="200" value="100" oninput="updateMockupScale('hoodie')">
-      <button onclick="resetMockupScale('hoodie')">Reset</button>
-    </div>
-
-    <button onclick="dtfAddText()">Add Text</button>
-
-    <select id="dtf-font" onchange="changeFont()">
-      <option value="Bungee">Bungee</option>
-      <option value="Impact">Impact</option>
-      <option value="Bebas Neue">Bebas Neue</option>
-      <option value="Creepster">Creepster</option>
-      <option value="Fredoka One">Fredoka One</option>
+    <select id="dtf-size" onchange="updatePrice()">
+      <option value="1">1ft</option>
+      <option value="2">2ft</option>
+      <option value="4">4ft</option>
+      <option value="8">8ft</option>
+      <option value="16">16ft</option>
+      <option value="32">32ft</option>
+      <option value="328" selected>328ft Full Roll</option>
     </select>
 
-    <input type="range" id="font-size" min="20" max="180" value="60" oninput="updateFontSize()">
-    <label>Size</label>
-
-    <input type="color" id="text-color" value="#000000" onchange="updateTextColor()">
-    <label>Color</label>
-
-    <button onclick="toggleMode()">Toggle Shirt Mode</button>
-    <button onclick="toggleBleed()">Toggle Bleed</button>
-    <button onclick="autoRotate()">Rotate Selected</button>
+    <button onclick="dtfAddText()">Add Text</button>
+    <button onclick="clearCanvas()">Clear Canvas</button>
+    <button onclick="dtfExport()">Add to Gang</button>
     <button onclick="dtfExportSVG()">Export SVG</button>
+    <button onclick="previewFullSheet()">Preview Sheet</button>
+    <button onclick="toggleShirtMode()">Toggle Shirt Mode</button>
   </div>
 
   <div class="main-content">
     <h1>Sheet Happens DTF Gang Sheet Builder</h1>
 
-    <div id="shirt-tabs" class="shirt-tabs">
+    <div id="shirt-tabs" style="display:none; margin:15px 0;">
       <button onclick="switchView('front')">Front</button>
       <button onclick="switchView('back')">Back</button>
       <button onclick="switchView('sleeve')">Sleeve</button>
-      <button onclick="switchView('hoodie')">Hoodie</button>
     </div>
 
-    <div id="drop-zone">Drag & Drop Designs Here or Click</div>
+    <div id="drop-zone">Drag & Drop Images Here or Click to Upload</div>
 
     <canvas id="dtf-editor" width="900" height="1200"></canvas>
 
-    <div id="status">Initializing...</div>
+    <div id="status">Ready – drag or upload images</div>
+    <div id="price-display">Price: $0.00 (incl. NJ tax)</div>
+    <div id="price-breakdown">
+      Base price: $0.00<br>
+      Extra length: $0.00<br>
+      Extra designs: $0.00<br>
+      Subtotal: $0.00<br>
+      NJ Tax (6.625%): $0.00<br>
+      <strong>Total: $0.00</strong>
+    </div>
+
+    <div style="margin:40px 0; text-align:center;">
+      <input type="text" id="dtf-name" placeholder="Your Name" style="width:300px; padding:10px; margin:10px;" />
+      <input type="text" id="dtf-contact" placeholder="Contact (email/phone)" style="width:300px; padding:10px; margin:10px;" />
+      <div id="paypal-button-container" style="margin:20px auto; max-width:300px;"></div>
+    </div>
+
+    <div class="social-pay">
+      <a href="https://www.facebook.com/omp.stu.7" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/omp.stu.7" target="_blank"><i class="fab fa-instagram"></i></a>
+    </div>
   </div>
 
   <script>
-    let canvas, bleedRect, shirtMode = false, currentView = 'front';
-
-    const shirtMockups = {
-      front: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=900',
-      back: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=900',
-      sleeve: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=900',
-      hoodie: 'https://images.unsplash.com/photo-1556821840-3a63e5bbf4a7?w=900'
-    };
-
-    const mockupScales = { front: 100, back: 100, sleeve: 100, hoodie: 100 };
+    let canvas;
+    let gangCount = 0;
+    let currentRowY = 20;
+    const spacing = 4;
 
     window.addEventListener('load', () => {
       canvas = new fabric.Canvas('dtf-editor', {
         width: 900,
         height: 1200,
         backgroundColor: '#ffffff',
-        preserveObjectStacking: true,
-        selection: true
+        selection: true,
+        preserveObjectStacking: true
       });
 
-      bleedRect = new fabric.Rect({
-        left: 50, top: 50, width: 800, height: 1100,
-        stroke: '#ff00aa', strokeWidth: 2, strokeDashArray: [5,5],
-        fill: 'transparent', selectable: false, evented: false, visible: false
-      });
-      canvas.add(bleedRect);
+      document.getElementById('status').textContent = 'Canvas ready – drag or upload images!';
 
       const dropZone = document.getElementById('drop-zone');
       dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -156,126 +127,153 @@
 
       document.getElementById('dtf-upload').addEventListener('change', e => handleFiles(e.target.files));
 
-      ['front','back','sleeve','hoodie'].forEach(v => {
-        document.getElementById(`mockup-${v}`).addEventListener('change', e => {
-          const file = e.target.files[0];
-          if (file) {
-            const url = URL.createObjectURL(file);
-            shirtMockups[v] = url;
-            document.getElementById(`preview-${v}`).src = url;
-            if (shirtMode && currentView === v) switchView(v);
-          }
-        });
-      });
+      // PayPal Buttons - REPLACE client-id with your real one
+      paypal.Buttons({
+        style: { shape: 'rect', color: 'gold', layout: 'vertical', label: 'paypal' },
+        createOrder: (data, actions) => {
+          const total = parseFloat(document.getElementById('price-display').textContent.match(/\d+\.\d{2}/)[0]);
+          const name = document.getElementById('dtf-name').value || 'Anonymous';
+          const contact = document.getElementById('dtf-contact').value || 'No contact';
 
-      document.getElementById('status').textContent = 'Ready – drag or upload designs';
+          return actions.order.create({
+            purchase_units: [{
+              amount: { value: total.toFixed(2), currency_code: 'USD' },
+              description: `DTF Gang Sheet - ${gangCount} designs - Contact: ${contact}`
+            }],
+            payer: {
+              name: {
+                given_name: name.split(' ')[0] || 'Customer',
+                surname: name.split(' ').slice(1).join(' ') || ''
+              }
+            }
+          });
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(details => {
+            alert('Payment successful!\nTransaction ID: ' + details.id + '\nThank you, ' + details.payer.name.given_name + '!');
+          });
+        },
+        onError: err => {
+          console.error('PayPal error:', err);
+          alert('Payment error. Please try again.');
+        }
+      }).render('#paypal-button-container');
     });
 
-    function handleFiles(files) {
-      files = Array.from(files);
-      if (!files.length) return;
+    function handleFiles(fileList) {
+      const files = Array.from(fileList);
+      if (files.length === 0) return;
 
-      let count = 0;
-      files.forEach(f => {
-        const r = new FileReader();
-        r.onload = e => {
-          fabric.Image.fromURL(e.target.result, img => {
+      let added = 0;
+      let currentX = 20;
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          fabric.Image.fromURL(ev.target.result, img => {
             if (!img) return;
-            img.scaleToWidth(400);
+            img.scaleToWidth(200);
             img.set({
-              left: (canvas.width - img.getScaledWidth()) / 2,
-              top: (canvas.height - img.getScaledHeight()) / 2
+              left: currentX,
+              top: currentRowY,
+              selectable: true,
+              opacity: 0,
+              scaleX: 0.5,
+              scaleY: 0.5
             });
             canvas.add(img);
-            canvas.setActiveObject(img);
             canvas.renderAll();
-            count++;
-            document.getElementById('status').textContent = `Added ${count}/${files.length}`;
+
+            // GSAP pop-in animation for new image
+            gsap.to(img, {
+              duration: 0.8,
+              opacity: 1,
+              scaleX: 1,
+              scaleY: 1,
+              ease: "back.out(1.7)"
+            });
+
+            currentX += img.getScaledWidth() + spacing;
+            if (currentX + 200 > canvas.width - 20) {
+              currentX = 20;
+              currentRowY += 220;
+            }
+
+            added++;
+            document.getElementById('status').textContent = `Added ${added}/${files.length} images`;
           }, { crossOrigin: 'anonymous' });
         };
-        r.readAsDataURL(f);
+        reader.readAsDataURL(file);
       });
     }
 
     function dtfAddText() {
-      const t = new fabric.IText('Edit me', {
+      const text = new fabric.IText('Edit me', {
         left: 200, top: 200,
         fontFamily: 'Bungee',
         fontSize: 60,
-        fill: '#000',
-        editable: true,
-        originX: 'center',
-        originY: 'center'
+        fill: '#000000',
+        opacity: 0
       });
-      canvas.add(t);
-      canvas.setActiveObject(t);
+      canvas.add(text);
+      canvas.setActiveObject(text);
       canvas.renderAll();
+
+      // GSAP fade-in for text
+      gsap.to(text, { duration: 0.6, opacity: 1, ease: "power2.out" });
     }
 
-    function changeFont() {
-      const f = document.getElementById('dtf-font').value;
-      const a = canvas.getActiveObject();
-      if (a && a.type === 'i-text') a.set({ fontFamily: f }), canvas.renderAll();
+    function clearCanvas() {
+      canvas.clear();
+      canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+      currentRowY = 20;
     }
 
-    function updateFontSize() {
-      const s = parseInt(document.getElementById('font-size').value);
-      const a = canvas.getActiveObject();
-      if (a && a.type === 'i-text') a.set({ fontSize: s }), canvas.renderAll();
-    }
+    function dtfExport() {
+      gangCount++;
+      updatePrice();
+      document.getElementById('status').textContent = `Added to gang! Total designs: ${gangCount}`;
 
-    function updateTextColor() {
-      const c = document.getElementById('text-color').value;
-      const a = canvas.getActiveObject();
-      if (a && a.type === 'i-text') a.set({ fill: c }), canvas.renderAll();
-    }
-
-    function toggleBleed() {
-      bleedVisible = !bleedVisible;
-      bleedRect.set({ visible: bleedVisible });
-      canvas.renderAll();
-    }
-
-    function toggleMode() {
-      shirtMode = !shirtMode;
-      document.getElementById('shirt-tabs').style.display = shirtMode ? 'block' : 'none';
-      if (shirtMode) switchView('front');
-      else canvas.setBackgroundImage(null, canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas)));
-    }
-
-    function switchView(v) {
-      currentView = v;
-      canvas.setBackgroundImage(null, () => {
-        fabric.Image.fromURL(shirtMockups[v], img => {
-          if (img) {
-            const s = mockupScales[v] / 100;
-            const bs = Math.max(canvas.width / img.width, canvas.height / img.height);
-            img.scale(bs * s);
-            img.set({
-              left: (canvas.width - img.getScaledWidth()) / 2,
-              top: (canvas.height - img.getScaledHeight()) / 2,
-              selectable: false,
-              evented: false,
-              originX: 'left',
-              originY: 'top'
-            });
-            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-          } else {
-            canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-          }
-        }, { crossOrigin: 'anonymous' });
+      // Flash animation on status
+      gsap.to("#status", {
+        duration: 0.4,
+        color: "#ffff00",
+        yoyo: true,
+        repeat: 3,
+        ease: "power1.inOut"
       });
     }
 
-    function updateMockupScale(v) {
-      mockupScales[v] = parseInt(document.getElementById(`scale-${v}`).value);
-      if (shirtMode && currentView === v) switchView(v);
-    }
+    function updatePrice() {
+      const feet = parseInt(document.getElementById('dtf-size').value) || 2;
+      const base = 16;
+      const extraLength = Math.max(0, feet - 2) * 0.1;
+      const extraDesigns = Math.max(0, gangCount - 12) * 1.5;
+      const subtotal = base + extraLength + extraDesigns;
+      const tax = subtotal * 0.06625;
+      const total = subtotal + tax;
 
-    function resetMockupScale(v) {
-      document.getElementById(`scale-${v}`).value = 100;
-      mockupScales[v] = 100;
-      if (shirtMode && currentView === v) switchView(v);
+      document.getElementById('price-display').textContent = `Price: $${total.toFixed(2)} (incl. NJ tax)`;
+
+      document.getElementById('price-breakdown').innerHTML = `
+        Base price: $${base.toFixed(2)}<br>
+        Extra length (${feet}ft): $${extraLength.toFixed(2)}<br>
+        Extra designs (${gangCount}): $${extraDesigns.toFixed(2)}<br>
+        Subtotal: $${subtotal.toFixed(2)}<br>
+        NJ Tax (6.625%): $${tax.toFixed(2)}<br>
+        <strong>Total: $${total.toFixed(2)}</strong>
+      `;
+
+      // GSAP flash on price update
+      gsap.to("#price-display", {
+        duration: 0.4,
+        scale: 1.12,
+        color: "#ffff00",
+        yoyo: true,
+        repeat: 3,
+        ease: "power1.inOut",
+        onComplete: () => gsap.to("#price-display", {scale:1, color:"#00ff9d", duration:0.3})
+      });
     }
 
     function dtfExportSVG() {
@@ -289,9 +287,18 @@
       URL.revokeObjectURL(url);
     }
 
-    function autoRotate() {
-      const o = canvas.getActiveObject();
-      if (o && o.type === 'image') o.rotate(o.angle + 90), canvas.renderAll();
+    function previewFullSheet() {
+      const dataUrl = canvas.toDataURL({format:'png', multiplier:4});
+      const win = window.open();
+      win.document.write('<img src="'+dataUrl+'" style="width:100%;">');
+      win.document.close();
+    }
+
+    function toggleShirtMode() {
+      const tabs = document.getElementById('shirt-tabs');
+      const isOn = tabs.style.display !== 'block';
+      tabs.style.display = isOn ? 'block' : 'none';
+      document.getElementById('status').textContent = isOn ? 'Shirt Mode ON – select view' : 'Shirt Mode OFF';
     }
   </script>
 </body>
