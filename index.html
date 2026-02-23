@@ -4,208 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sheet Happens DTF Gang Sheet Builder</title>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bebas+Neue&family=Bungee&family=Creepster&family=Exo+2:wght@700&family=Fredoka+One&family=Impact&family=Luckiest+Guy&family=Oswald:wght@700&family=Passion+One&family=Patua+One&family=Permanent+Marker&family=Righteous&family=Rock+Salt&family=Rubik+Beastly&family=Shojumaru&family=Sedgwick+Ave&family=Sigmar+One&family=Special+Elite&family=Staatliches&family=Titan+One&family=Unica+One&family=VT323&family=Wallpoet&family=Yeseva+One&family=Zen+Dots&family=Black+Han+Sans&family=Chewy&family=Concert+One&family=Diplomata+SC&family=Faster+One&family=Finger+Paint&family=Fruktur&family=Galada&family=Gruppo&family=Hind+Madurai:wght@700&family=IM+Fell+English+SC&family=Josefin+Sans:wght@700&family=Knewave&family=Modak&family=Monoton&family=Orbitron:wght@700&family=Paytone+One&family=Pirata+One&family=Press+Start+2P&family=Raleway+Dots&family=Reenie+Beanie&family=Rubik+Mono+One&family=Special+Elite&family=Syncopate:wght@700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Impact&family=Bebas+Neue&family=Creepster&family=Fredoka+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body {
-      margin: 0;
-      font-family: 'Bungee', sans-serif;
-      background: #0f1c3a;
-      color: #f0f8ff;
-      display: flex;
-      min-height: 100vh;
-    }
-    .sidebar {
-      width: 340px;
-      background: #1a2b4e;
-      padding: 20px;
-      box-sizing: border-box;
-      height: 100vh;
-      position: fixed;
-      overflow-y: auto;
-      border-right: 3px solid #00b4ff;
-      z-index: 10;
-    }
-    .sidebar h3, .sidebar h4 {
-      color: #00ff9d;
-      text-align: center;
-      margin: 15px 0 10px;
-    }
-    .main-content {
-      margin-left: 340px;
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 {
-      color: #00ff9d;
-      text-shadow: 4px 4px #000;
-      font-size: 3.8rem;
-      margin: 0 0 30px;
-      text-align: center;
-      animation: spinFlash 7s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-    }
-    @keyframes spinFlash {
-      0%   { transform: rotate(0deg) scale(0.9); opacity: 0.7; }
-      50%  { transform: rotate(180deg) scale(1.1); opacity: 1; }
-      100% { transform: rotate(360deg) scale(1.05); opacity: 1; }
-    }
-    canvas {
-      border: 4px solid #00b4ff;
-      border-radius: 12px;
-      background: #ffffff !important;
-      box-shadow: 0 0 25px rgba(0,180,255,0.5);
-      max-width: 100%;
-      margin-bottom: 20px;
-      transition: background 0.4s ease-in-out;
-    }
-    button, select, input[type="file"] {
-      padding: 10px 16px;
-      margin: 6px 0;
-      border-radius: 8px;
-      font-size: 15px;
-      border: 2px solid #00b4ff;
-      background: #0f1c3a;
-      color: #fff;
-      cursor: pointer;
-      width: 100%;
-      box-sizing: border-box;
-      transition: all 0.2s;
-    }
-    button:hover {
-      background: #00b4ff;
-      color: #000;
-      transform: scale(1.03);
-    }
-    input[type="range"], input[type="color"] {
-      width: 140px;
-      margin: 0 8px;
-    }
-    label {
-      color: #ccc;
-      font-size: 14px;
-      margin-right: 8px;
-    }
-    #status {
-      color: #00ff9d;
-      font-weight: bold;
-      text-align: center;
-      margin: 15px 0;
-      font-size: 20px;
-    }
-    #drop-zone {
-      border: 3px dashed #00b4ff;
-      border-radius: 12px;
-      padding: 30px;
-      text-align: center;
-      background: rgba(0,180,255,0.08);
-      min-height: 140px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      color: #aaa;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin: 20px 0;
-      max-width: 800px;
-    }
-    #drop-zone:hover, #drop-zone.dragover {
-      border-color: #00ff9d;
-      color: #00ff9d;
-      background: rgba(0,255,157,0.2);
-    }
-    .shirt-tabs {
-      display: none;
-      margin: 15px 0;
-      text-align: center;
-    }
-    .shirt-tabs button {
-      margin: 0 10px;
-      padding: 10px 20px;
-      background: #ff00aa;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .shirt-tabs button.active {
-      background: #00ff9d;
-      color: black;
-    }
-    .mockup-section {
-      margin: 15px 0;
-      padding: 10px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 8px;
-    }
-    .mockup-thumbs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin: 8px 0;
-    }
-    .mockup-thumb {
-      width: 80px;
-      height: 80px;
-      border: 2px solid #444;
-      border-radius: 8px;
-      background: #222;
-      overflow: hidden;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .mockup-thumb:hover, .mockup-thumb.active {
-      border-color: #00ff9d;
-    }
-    .mockup-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .gang-preview {
-      margin-top: 30px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-    }
-    .gang-preview img {
-      width: 140px;
-      height: auto;
-      border: 3px solid #00b4ff;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .gang-preview img:hover {
-      transform: scale(1.1);
-    }
+    body { margin:0; font-family:'Bungee', sans-serif; background:#0f1c3a; color:#f0f8ff; display:flex; min-height:100vh; }
+    .sidebar { width:300px; background:#1a2b4e; padding:20px; height:100vh; position:fixed; overflow-y:auto; border-right:3px solid #00b4ff; }
+    .sidebar h3, .sidebar h4 { color:#00ff9d; text-align:center; margin:15px 0 10px; }
+    .main-content { margin-left:300px; flex:1; padding:20px; display:flex; flex-direction:column; align-items:center; }
+    h1 { color:#00ff9d; text-shadow:4px 4px #000; font-size:3.8rem; margin:0 0 30px; animation:spinFlash 7s cubic-bezier(0.68,-0.55,0.265,1.55) forwards; }
+    @keyframes spinFlash { 0%{transform:rotate(0deg) scale(0.9);opacity:0.7} 50%{transform:rotate(180deg) scale(1.1);opacity:1} 100%{transform:rotate(360deg) scale(1.05);opacity:1} }
+    canvas { border:4px solid #00b4ff; border-radius:12px; background:#ffffff !important; box-shadow:0 0 25px rgba(0,180,255,0.5); max-width:100%; margin-bottom:20px; transition:background 0.4s; }
+    button, select, input { padding:10px 16px; margin:6px 0; border-radius:8px; font-size:15px; border:2px solid #00b4ff; background:#0f1c3a; color:#fff; cursor:pointer; width:100%; box-sizing:border-box; transition:all 0.2s; }
+    button:hover { background:#00b4ff; color:#000; transform:scale(1.03); }
+    input[type="range"], input[type="color"] { width:140px; margin:0 8px; }
+    label { color:#ccc; font-size:14px; margin-right:8px; }
+    #status { color:#00ff9d; font-weight:bold; text-align:center; margin:15px 0; font-size:20px; }
+    #drop-zone { border:3px dashed #00b4ff; border-radius:12px; padding:30px; text-align:center; background:rgba(0,180,255,0.08); min-height:140px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#aaa; cursor:pointer; transition:all 0.3s; margin:20px 0; max-width:800px; }
+    #drop-zone:hover, #drop-zone.dragover { border-color:#00ff9d; color:#00ff9d; background:rgba(0,255,157,0.2); }
+    .shirt-tabs { display:none; margin:15px 0; text-align:center; }
+    .shirt-tabs button { margin:0 10px; padding:10px 20px; background:#ff00aa; color:white; border:none; border-radius:8px; cursor:pointer; }
+    .shirt-tabs button.active { background:#00ff9d; color:black; }
+    .mockup-section { margin:15px 0; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px; }
+    .mockup-thumbs { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:8px 0; }
+    .mockup-thumb { width:80px; height:80px; border:2px solid #444; border-radius:8px; background:#222; overflow:hidden; cursor:pointer; transition:border-color 0.2s; }
+    .mockup-thumb:hover, .mockup-thumb.active { border-color:#00ff9d; }
+    .mockup-thumb img { width:100%; height:100%; object-fit:cover; }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 </head>
 <body>
   <div class="sidebar">
-    <h3>Tools & Controls</h3>
+    <h3>Tools</h3>
 
     <input type="file" id="dtf-upload" accept="image/*" multiple style="display:none;" />
-    <button onclick="document.getElementById('dtf-upload').click()">
-      <i class="fas fa-upload"></i> Upload Your Designs
-    </button>
+    <button onclick="document.getElementById('dtf-upload').click()">Upload Designs</button>
 
-    <!-- Custom mockup uploads + scaling + thumbnails -->
-    <h4>Custom Mockups & Scaling</h4>
+    <h4>Mockups</h4>
 
     <div class="mockup-section">
       <label>Front</label>
       <input type="file" id="mockup-front" accept="image/*" />
-      <div class="mockup-thumbs">
-        <div class="mockup-thumb" id="thumb-front"><img id="preview-front" src="" alt="Front"></div>
-      </div>
-      <label>Scale:</label>
+      <div class="mockup-thumbs"><div class="mockup-thumb"><img id="preview-front" src="" alt="Front"></div></div>
+      <label>Scale</label>
       <input type="range" id="scale-front" min="50" max="200" value="100" oninput="updateMockupScale('front')">
       <button onclick="resetMockupScale('front')">Reset</button>
     </div>
@@ -213,10 +53,8 @@
     <div class="mockup-section">
       <label>Back</label>
       <input type="file" id="mockup-back" accept="image/*" />
-      <div class="mockup-thumbs">
-        <div class="mockup-thumb" id="thumb-back"><img id="preview-back" src="" alt="Back"></div>
-      </div>
-      <label>Scale:</label>
+      <div class="mockup-thumbs"><div class="mockup-thumb"><img id="preview-back" src="" alt="Back"></div></div>
+      <label>Scale</label>
       <input type="range" id="scale-back" min="50" max="200" value="100" oninput="updateMockupScale('back')">
       <button onclick="resetMockupScale('back')">Reset</button>
     </div>
@@ -224,10 +62,8 @@
     <div class="mockup-section">
       <label>Sleeve</label>
       <input type="file" id="mockup-sleeve" accept="image/*" />
-      <div class="mockup-thumbs">
-        <div class="mockup-thumb" id="thumb-sleeve"><img id="preview-sleeve" src="" alt="Sleeve"></div>
-      </div>
-      <label>Scale:</label>
+      <div class="mockup-thumbs"><div class="mockup-thumb"><img id="preview-sleeve" src="" alt="Sleeve"></div></div>
+      <label>Scale</label>
       <input type="range" id="scale-sleeve" min="50" max="200" value="100" oninput="updateMockupScale('sleeve')">
       <button onclick="resetMockupScale('sleeve')">Reset</button>
     </div>
@@ -235,66 +71,32 @@
     <div class="mockup-section">
       <label>Hoodie</label>
       <input type="file" id="mockup-hoodie" accept="image/*" />
-      <div class="mockup-thumbs">
-        <div class="mockup-thumb" id="thumb-hoodie"><img id="preview-hoodie" src="" alt="Hoodie"></div>
-      </div>
-      <label>Scale:</label>
+      <div class="mockup-thumbs"><div class="mockup-thumb"><img id="preview-hoodie" src="" alt="Hoodie"></div></div>
+      <label>Scale</label>
       <input type="range" id="scale-hoodie" min="50" max="200" value="100" oninput="updateMockupScale('hoodie')">
       <button onclick="resetMockupScale('hoodie')">Reset</button>
     </div>
 
-    <!-- Text controls -->
-    <button onclick="dtfAddText()">
-      <i class="fas fa-font"></i> Add Text
-    </button>
+    <button onclick="dtfAddText()">Add Text</button>
 
-    <div class="text-controls">
-      <label>Font:</label>
-      <select id="dtf-font" onchange="changeFont()">
-        <option value="Bungee">Bungee</option>
-        <option value="Anton">Anton</option>
-        <option value="Impact">Impact</option>
-        <option value="Bebas Neue">Bebas Neue</option>
-        <option value="Creepster">Creepster</option>
-        <option value="Fredoka One">Fredoka One</option>
-        <option value="Luckiest Guy">Luckiest Guy</option>
-      </select>
+    <select id="dtf-font" onchange="changeFont()">
+      <option value="Bungee">Bungee</option>
+      <option value="Impact">Impact</option>
+      <option value="Bebas Neue">Bebas Neue</option>
+      <option value="Creepster">Creepster</option>
+      <option value="Fredoka One">Fredoka One</option>
+    </select>
 
-      <label>Size:</label>
-      <input type="range" id="font-size" min="20" max="180" value="60" oninput="updateFontSize()">
+    <input type="range" id="font-size" min="20" max="180" value="60" oninput="updateFontSize()">
+    <label>Size</label>
 
-      <label>Color:</label>
-      <input type="color" id="text-color" value="#000000" onchange="updateTextColor()">
-    </div>
+    <input type="color" id="text-color" value="#000000" onchange="updateTextColor()">
+    <label>Color</label>
 
-    <!-- Other tools -->
-    <button onclick="dtfUndo()">
-      <i class="fas fa-undo"></i> Undo
-    </button>
-
-    <button onclick="dtfExport()">
-      <i class="fas fa-save"></i> Add to Gang
-    </button>
-
-    <button onclick="dtfExportSVG()">
-      <i class="fas fa-file-export"></i> Export SVG
-    </button>
-
-    <button onclick="previewFullSheet()">
-      <i class="fas fa-eye"></i> Preview Sheet
-    </button>
-
-    <button onclick="autoRotate()">
-      <i class="fas fa-sync-alt"></i> Rotate
-    </button>
-
-    <button onclick="toggleBleed()">
-      <i class="fas fa-border-all"></i> Toggle Bleed
-    </button>
-
-    <button onclick="toggleMode()">
-      <i class="fas fa-tshirt"></i> Toggle Shirt Mode
-    </button>
+    <button onclick="toggleMode()">Toggle Shirt Mode</button>
+    <button onclick="toggleBleed()">Toggle Bleed</button>
+    <button onclick="autoRotate()">Rotate Selected</button>
+    <button onclick="dtfExportSVG()">Export SVG</button>
   </div>
 
   <div class="main-content">
@@ -307,33 +109,24 @@
       <button onclick="switchView('hoodie')">Hoodie</button>
     </div>
 
-    <div id="drop-zone">Drag & Drop Your Designs Here or Click to Upload</div>
+    <div id="drop-zone">Drag & Drop Designs Here or Click</div>
 
     <canvas id="dtf-editor" width="900" height="1200"></canvas>
 
-    <div id="status">Ready – drag designs or upload custom mockups</div>
-
-    <div class="gang-preview" id="gang-preview"></div>
+    <div id="status">Initializing...</div>
   </div>
 
   <script>
-    let canvas, history = [], bleedVisible = false, shirtMode = false, bleedRect, currentView = 'front';
+    let canvas, bleedRect, shirtMode = false, currentView = 'front';
 
-    // Mockup scaling factors (default 100%)
-    const mockupScales = {
-      front: 1,
-      back: 1,
-      sleeve: 1,
-      hoodie: 1
+    const shirtMockups = {
+      front: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=900',
+      back: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=900',
+      sleeve: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=900',
+      hoodie: 'https://images.unsplash.com/photo-1556821840-3a63e5bbf4a7?w=900'
     };
 
-    // Default mockups
-    let shirtMockups = {
-      front: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80',
-      back: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80',
-      sleeve: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80',
-      hoodie: 'https://images.unsplash.com/photo-1556821840-3a63e5bbf4a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80'
-    };
+    const mockupScales = { front: 100, back: 100, sleeve: 100, hoodie: 100 };
 
     window.addEventListener('load', () => {
       canvas = new fabric.Canvas('dtf-editor', {
@@ -351,7 +144,6 @@
       });
       canvas.add(bleedRect);
 
-      // Drag & Drop for designs
       const dropZone = document.getElementById('drop-zone');
       dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
       dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
@@ -364,40 +156,30 @@
 
       document.getElementById('dtf-upload').addEventListener('change', e => handleFiles(e.target.files));
 
-      // Custom mockup upload + instant thumbnail
-      ['front', 'back', 'sleeve', 'hoodie'].forEach(view => {
-        const input = document.getElementById(`mockup-${view}`);
-        input.addEventListener('change', e => {
+      ['front','back','sleeve','hoodie'].forEach(v => {
+        document.getElementById(`mockup-${v}`).addEventListener('change', e => {
           const file = e.target.files[0];
           if (file) {
             const url = URL.createObjectURL(file);
-            shirtMockups[view] = url;
-            const preview = document.getElementById(`preview-${view}`);
-            if (preview) preview.src = url;
-            document.getElementById('status').textContent = `Custom ${view} mockup loaded`;
-            if (shirtMode && currentView === view) switchView(view);
+            shirtMockups[v] = url;
+            document.getElementById(`preview-${v}`).src = url;
+            if (shirtMode && currentView === v) switchView(v);
           }
         });
       });
 
-      // Initial thumbnails from defaults
-      Object.keys(shirtMockups).forEach(view => {
-        const preview = document.getElementById(`preview-${view}`);
-        if (preview) preview.src = shirtMockups[view];
-      });
-
-      document.getElementById('status').textContent = 'Ready – drag designs or upload custom mockups';
+      document.getElementById('status').textContent = 'Ready – drag or upload designs';
     });
 
-    function handleFiles(fileList) {
-      const files = Array.from(fileList);
-      if (files.length === 0) return;
+    function handleFiles(files) {
+      files = Array.from(files);
+      if (!files.length) return;
 
-      let loaded = 0;
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          fabric.Image.fromURL(ev.target.result, img => {
+      let count = 0;
+      files.forEach(f => {
+        const r = new FileReader();
+        r.onload = e => {
+          fabric.Image.fromURL(e.target.result, img => {
             if (!img) return;
             img.scaleToWidth(400);
             img.set({
@@ -407,55 +189,45 @@
             canvas.add(img);
             canvas.setActiveObject(img);
             canvas.renderAll();
-            loaded++;
-            document.getElementById('status').textContent = `Added ${loaded}/${files.length} design(s)`;
+            count++;
+            document.getElementById('status').textContent = `Added ${count}/${files.length}`;
           }, { crossOrigin: 'anonymous' });
         };
-        reader.readAsDataURL(file);
+        r.readAsDataURL(f);
       });
     }
 
     function dtfAddText() {
-      const text = new fabric.IText('Edit me', {
+      const t = new fabric.IText('Edit me', {
         left: 200, top: 200,
         fontFamily: 'Bungee',
         fontSize: 60,
-        fill: '#000000',
+        fill: '#000',
         editable: true,
         originX: 'center',
         originY: 'center'
       });
-      canvas.add(text);
-      canvas.setActiveObject(text);
+      canvas.add(t);
+      canvas.setActiveObject(t);
       canvas.renderAll();
-      document.getElementById('status').textContent = 'Text added – select to edit';
     }
 
     function changeFont() {
-      const font = document.getElementById('dtf-font').value;
-      const active = canvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.set({ fontFamily: font });
-        canvas.renderAll();
-      }
+      const f = document.getElementById('dtf-font').value;
+      const a = canvas.getActiveObject();
+      if (a && a.type === 'i-text') a.set({ fontFamily: f }), canvas.renderAll();
     }
 
     function updateFontSize() {
-      const size = parseInt(document.getElementById('font-size').value);
-      const active = canvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.set({ fontSize: size });
-        canvas.renderAll();
-      }
+      const s = parseInt(document.getElementById('font-size').value);
+      const a = canvas.getActiveObject();
+      if (a && a.type === 'i-text') a.set({ fontSize: s }), canvas.renderAll();
     }
 
     function updateTextColor() {
-      const color = document.getElementById('text-color').value;
-      const active = canvas.getActiveObject();
-      if (active && active.type === 'i-text') {
-        active.set({ fill: color });
-        canvas.renderAll();
-      }
+      const c = document.getElementById('text-color').value;
+      const a = canvas.getActiveObject();
+      if (a && a.type === 'i-text') a.set({ fill: c }), canvas.renderAll();
     }
 
     function toggleBleed() {
@@ -467,71 +239,48 @@
     function toggleMode() {
       shirtMode = !shirtMode;
       document.getElementById('shirt-tabs').style.display = shirtMode ? 'block' : 'none';
-      document.getElementById('status').textContent = shirtMode ? 'Shirt Mode ON – choose view' : 'Shirt Mode OFF';
-      if (shirtMode) {
-        switchView('front');
-      } else {
-        canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
-        canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-      }
+      if (shirtMode) switchView('front');
+      else canvas.setBackgroundImage(null, canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas)));
     }
 
-    function switchView(view) {
-      currentView = view;
-
+    function switchView(v) {
+      currentView = v;
       canvas.setBackgroundImage(null, () => {
-        fabric.Image.fromURL(shirtMockups[view], bgImg => {
-          if (bgImg) {
-            // Apply user-defined scale
-            const userScale = mockupScales[view] / 100;
-            const baseScale = Math.max(
-              canvas.width / bgImg.width,
-              canvas.height / bgImg.height
-            );
-            bgImg.scale(baseScale * userScale);
-
-            // Center
-            bgImg.set({
-              left: (canvas.width - bgImg.getScaledWidth()) / 2,
-              top: (canvas.height - bgImg.getScaledHeight()) / 2,
+        fabric.Image.fromURL(shirtMockups[v], img => {
+          if (img) {
+            const s = mockupScales[v] / 100;
+            const bs = Math.max(canvas.width / img.width, canvas.height / img.height);
+            img.scale(bs * s);
+            img.set({
+              left: (canvas.width - img.getScaledWidth()) / 2,
+              top: (canvas.height - img.getScaledHeight()) / 2,
               selectable: false,
               evented: false,
               originX: 'left',
               originY: 'top'
             });
-
-            canvas.setBackgroundImage(bgImg, canvas.renderAll.bind(canvas));
-            document.getElementById('status').textContent = `Editing ${view} mockup (scale: ${Math.round(userScale * 100)}%)`;
+            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
           } else {
             canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-            document.getElementById('status').textContent = `No ${view} mockup – using white`;
           }
         }, { crossOrigin: 'anonymous' });
       });
     }
 
-    function updateMockupScale(view) {
-      const scalePercent = parseInt(document.getElementById(`scale-${view}`).value);
-      mockupScales[view] = scalePercent;
-      if (shirtMode && currentView === view) {
-        switchView(view);
-      }
+    function updateMockupScale(v) {
+      mockupScales[v] = parseInt(document.getElementById(`scale-${v}`).value);
+      if (shirtMode && currentView === v) switchView(v);
     }
 
-    function resetMockupScale(view) {
-      document.getElementById(`scale-${view}`).value = 100;
-      mockupScales[view] = 100;
-      if (shirtMode && currentView === view) {
-        switchView(view);
-      }
+    function resetMockupScale(v) {
+      document.getElementById(`scale-${v}`).value = 100;
+      mockupScales[v] = 100;
+      if (shirtMode && currentView === v) switchView(v);
     }
 
-    // Placeholder functions (expand later)
-    function dtfUndo() { alert('Undo coming soon'); }
-    function dtfExport() { alert('Add to Gang coming soon'); }
     function dtfExportSVG() {
       const svg = canvas.toSVG();
-      const blob = new Blob([svg], {type: 'image/svg+xml'});
+      const blob = new Blob([svg], {type:'image/svg+xml'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -540,19 +289,9 @@
       URL.revokeObjectURL(url);
     }
 
-    function previewFullSheet() {
-      const dataUrl = canvas.toDataURL({ format: 'png', multiplier: 4 });
-      const win = window.open();
-      win.document.write('<img src="' + dataUrl + '" style="width:100%;">');
-      win.document.close();
-    }
-
     function autoRotate() {
-      const obj = canvas.getActiveObject();
-      if (obj && obj.type === 'image') {
-        obj.rotate(obj.angle + 90);
-        canvas.renderAll();
-      }
+      const o = canvas.getActiveObject();
+      if (o && o.type === 'image') o.rotate(o.angle + 90), canvas.renderAll();
     }
   </script>
 </body>
