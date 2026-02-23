@@ -38,6 +38,9 @@
     .bleed-overlay { position:absolute; pointer-events:none; border:2px dashed #ff00aa; opacity:0.6; }
     .mode-toggle { background:#ff00aa; color:#fff; }
     .mode-toggle:hover { background:#e60099; }
+    .shirt-tabs { margin:15px 0; text-align:center; display:none; }
+    .shirt-tabs button { margin:0 10px; padding:8px 16px; background:#ff00aa; color:#fff; border:none; border-radius:8px; cursor:pointer; font-family:'Bungee',sans-serif; }
+    .shirt-tabs button.active { background:#00ff9d; color:#000; }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.8/dist/index.umd.min.js"></script>
@@ -56,6 +59,8 @@
       <button onclick="dtfEnhance()">Enhance</button>
       <button onclick="dtfUndo()">Undo</button>
       <button onclick="dtfExport()">Add to Gang</button>
+      <button onclick="dtfExportSVG()">Export SVG</button>
+      <button onclick="batchExportSVG()">Batch Export SVG</button>
       <button onclick="previewFullSheet()">Preview Full Sheet</button>
       <button onclick="autoRotate()">Auto Rotate</button>
       <button onclick="toggleBleed()">Toggle Bleed Lines</button>
@@ -135,6 +140,12 @@
       <button onclick="toggleNightMode()">Night Mode</button>
     </div>
 
+    <div id="shirt-tabs" class="shirt-tabs" style="display:none;">
+      <button data-view="front" onclick="switchView('front')" class="tab-btn active">Front</button>
+      <button data-view="back" onclick="switchView('back')" class="tab-btn">Back</button>
+      <button data-view="sleeve" onclick="switchView('sleeve')" class="tab-btn">Sleeve</button>
+    </div>
+
     <canvas id="dtf-editor" width="900" height="1200"></canvas>
 
     <div id="dtf-price">Price: $0.00 (incl. NJ tax)</div>
@@ -166,7 +177,8 @@
   </div>
 
   <script>
-    let dtfCanvas, history = [], bleedVisible = false, isShirtMode = false, shirtBg = null, bleedRect;
+    let dtfCanvas, history = [], bleedVisible = false, isShirtMode = false, currentView = 'front', bleedRect;
+    let dtfGang = []; // array of canvas JSON objects for batch export
 
     window.addEventListener('load', () => {
       dtfCanvas = new fabric.Canvas('dtf-editor', {
@@ -197,32 +209,6 @@
       if (history.length === 0) return;
       dtfCanvas.loadFromJSON(history.pop(), () => dtfCanvas.renderAll());
       document.getElementById('status').textContent = 'Undone!';
-    }
-
-    function saveDesign() {
-      const json = JSON.stringify(dtfCanvas.toJSON(['name', 'fontFamily', 'fontSize', 'fill']));
-      const blob = new Blob([json], {type: 'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'gang-sheet.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      document.getElementById('status').textContent = 'Saved!';
-    }
-
-    function loadDesign(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        dtfCanvas.loadFromJSON(JSON.parse(ev.target.result), () => {
-          dtfCanvas.setBackgroundColor('#ffffff', dtfCanvas.renderAll.bind(dtfCanvas));
-          dtfCanvas.renderAll();
-          document.getElementById('status').textContent = 'Loaded!';
-        });
-      };
-      reader.readAsText(file);
     }
 
     document.getElementById('dtf-upload').addEventListener('change', e => {
@@ -303,39 +289,116 @@
     }
 
     function toggleMode() {
-      alert('Shirt mode placeholder');
+      isShirtMode = !isShirtMode;
+      document.querySelector('.mode-toggle').textContent = isShirtMode ? 'Exit Shirt Mode' : 'Shirt Mode';
+      document.getElementById('shirt-tabs').style.display = isShirtMode ? 'block' : 'none';
+      if (isShirtMode) {
+        switchView('front');
+      } else {
+        dtfCanvas.setBackgroundColor('#ffffff', dtfCanvas.renderAll.bind(dtfCanvas));
+      }
+      document.getElementById('status').textContent = isShirtMode ? 'Shirt mode on' : 'Shirt mode off';
+    }
+
+    function switchView(view) {
+      currentView = view;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-view') === view));
+
+      dtfCanvas.clear();
+      dtfCanvas.setBackgroundColor('#ffffff', () => {});
+
+      const guide = new fabric.Rect({ left:100, top:100, width:700, height:900, stroke:'#00ff9d', fill:'transparent', selectable:false });
+      dtfCanvas.add(guide);
+
+      const label = new fabric.Text(view.toUpperCase(), { left:400, top:20, fontSize:30, fill:'#00ff9d', selectable:false });
+      dtfCanvas.add(label);
+
+      dtfCanvas.renderAll();
+      document.getElementById('status').textContent = `Editing ${view}`;
     }
 
     function autoRotate() {
-      alert('Auto rotate placeholder');
+      const obj = dtfCanvas.getActiveObject();
+      if (obj && obj.type === 'image') {
+        obj.rotate(obj.angle + 90);
+        dtfCanvas.renderAll();
+      }
     }
 
     function previewFullSheet() {
-      alert('Preview placeholder');
-    }
-
-    function dtfUpscale() {
-      alert('Upscale placeholder');
-    }
-
-    function dtfRemoveBg() {
-      alert('Remove BG placeholder');
-    }
-
-    function dtfMagicErase() {
-      alert('Magic Erase placeholder');
-    }
-
-    function dtfEnhance() {
-      alert('Enhance placeholder');
+      const dataUrl = dtfCanvas.toDataURL({ format: 'png', multiplier: 4 });
+      document.getElementById('full-sheet-img').src = dataUrl;
+      document.getElementById('full-preview').style.display = 'flex';
     }
 
     function dtfExport() {
-      alert('Add to Gang placeholder');
+      const json = dtfCanvas.toJSON(['name', 'fontFamily', 'fontSize', 'fill']);
+      dtfGang.push(json);
+      const dataUrl = dtfCanvas.toDataURL({ format: 'png', multiplier: 4 });
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.onclick = () => {
+        document.getElementById('full-sheet-img').src = dataUrl;
+        document.getElementById('full-preview').style.display = 'flex';
+      };
+      document.getElementById('gang-preview').appendChild(img);
+      document.getElementById('status').textContent = 'Added to gang!';
+      updateDtfPrice();
+    }
+
+    function dtfExportSVG() {
+      const svg = dtfCanvas.toSVG({
+        viewBox: '0 0 ' + dtfCanvas.width + ' ' + dtfCanvas.height,
+        width: dtfCanvas.width,
+        height: dtfCanvas.height
+      });
+      const blob = new Blob([svg], {type: 'image/svg+xml'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'gang-sheet.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+      document.getElementById('status').textContent = 'SVG exported!';
+    }
+
+    function batchExportSVG() {
+      if (dtfGang.length === 0) return alert('No designs in gang yet!');
+
+      dtfGang.forEach((json, index) => {
+        // Temporarily load each JSON into a hidden canvas to export SVG
+        const tempCanvas = new fabric.StaticCanvas(null, { width: 900, height: 1200 });
+        tempCanvas.loadFromJSON(json, () => {
+          const svg = tempCanvas.toSVG({
+            viewBox: '0 0 900 1200',
+            width: 900,
+            height: 1200
+          });
+          const blob = new Blob([svg], {type: 'image/svg+xml'});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `gang-sheet-${index + 1}.svg`;
+          a.click();
+          URL.revokeObjectURL(url);
+          tempCanvas.dispose();
+        });
+      });
+
+      document.getElementById('status').textContent = 'Batch SVG export started - files downloading...';
     }
 
     function updateDtfPrice() {
-      document.getElementById('dtf-price').textContent = 'Price: $0.00 (incl. NJ tax)';
+      const count = dtfGang.length;
+      const feet = parseInt(document.getElementById('dtf-size').value) || 2;
+      const base = 16;
+      const extraLength = Math.max(0, feet - 2) * 0.1;
+      const extraDesigns = Math.max(0, count - 12) * 1.5;
+      const subtotal = base + extraLength + extraDesigns;
+      const tax = subtotal * 0.06625;
+      const total = subtotal + tax;
+      document.getElementById('dtf-price').textContent = `Price: $${total.toFixed(2)} (incl. NJ tax)`;
+      document.getElementById('dtf-count').textContent = `Designs: ${count}`;
     }
   </script>
 </body>
